@@ -1,0 +1,9 @@
+
+9/25/2021:
+--> figure out how to add config and ssl files to gitignore
+--> finish raw data infra
+   --> sp_500_constituents
+   --> company data
+--> figure out derived data infra
+
+   
