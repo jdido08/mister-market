@@ -1,0 +1,129 @@
+# 2/27/2021
+
+Three Main Parts:
+1. Data Backend (data infrastructure) -- updating raw data from world, cleaning it, and putting it in a format consumable by App Backend
+2. App Backend -- app functionality e.g. market fundamentals derivations, etc..
+3. App Frontend
+
+___________________
+
+
+#market_day
+   # growth
+   # inflatiom
+   # real yields
+   # risk premium
+
+
+
+
+___________________
+
+#high convinction:
+  - growth, inflation, risk premium, real rates --> should exist as a curve in its final output
+  - sp500 and sectors need to exist as an index
+  - market is highest order --> if we had multiple indices then probably create high level class called world?
+  - marke
+
+
+question:
+ - should company exist as a date
+
+ should curve exists only as a single day --> yes
+
+- need to figure out how ill do attribution
+
+
+market
+  - prices
+  - fundameantsl
+
+
+
+____________
+
+market.date.price #today we are treating sp500 as market price --> this could change but unlikely
+market.date.growth.average #one average growth rate for market that day
+market.date.inflation.avearage  #one average inflation rate for market that day
+market.date.real_rates.average #one average real rate for market that day
+market.date.erp #one average erp
+
+market.price.change --> returns change between two dates
+
+market.date.growth #market growth curve for that day
+market.date.inflation #market inflation curve for that day
+....
+
+
+index.price
+index.date.price
+index.date.constituents
+
+
+
+market.country
+market.currency
+
+
+
+
+market.date.index.growth # return growth curve for certain index on certain day
+market.date.inflation # returns inflation
+
+
+
+
+market.growth #latest market growth rate
+
+market.
+
+company.date.price #returns price of company for specific day
+company.date.earnings
+company.price # latest company price
+
+company.earnings #latest earnings
+company.price_history #all price history
+
+
+
+
+
+
+
+___________________
+
+1. Data Backend
+ - Updates through reoccuring google cloud functions
+ - sources of data: each of these should be its own class
+    - FRED
+    - Web Scraping
+    - My own other databases
+    - Alpha Vantage
+ - each souce class has functions:
+    - update data from source
+    - save data to specific database
+- update will be down at some candence using google cloud functions
+- **** still need to figure out how to handle instances where I don't want to update everything or i need to combine sources ****
+
+
+2. App Backend
+
+classes
+
+ - market
+   - real rates
+   - inflation
+   - risk premium
+   - growth
+
+
+ - company
+ - curve -- given set of prices and maturities, can return zeroes, forward rates, etc..(can be used for treasuries, tips, growth, rp, etc..)
+ - index -- given set of companies -- returns index mktcap, shares, eps, payout ratio, price, and growth etc.. (can be used for broader index but also sectors)
+ -
+
+
+
+3. App Frontend -- don't worry for now;
+  - updates daily
+  - only weekly synthesis

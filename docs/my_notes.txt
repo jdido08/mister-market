@@ -1,0 +1,19 @@
+
+
+# market_date
+
+  # variables
+   - date 
+
+  # prices and fundamentals
+   - treasury rates - dict
+   - tips - dict
+   - sp_500_prices -
+   - sp_500_payout_ratio
+   - sp_500_earnings
+
+  # outputs
+   - real rate (1 number)
+   - inflation (1 number)
+   - growth (1 number)
+   - risk premium (1 number)

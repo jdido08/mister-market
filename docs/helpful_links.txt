@@ -1,0 +1,20 @@
+
+Programming Links:
+1. creating classes in python: https://docs.python.org/3/tutorial/classes.html
+2. project best practices: https://github.com/elsewhencode/project-guidelines
+3. project best practices: https://github.com/kriasoft/Folder-Structure-Conventions
+4. google app engine python quick start:  https://cloud.google.com/appengine/docs/standard/python3/quickstart --> env\Scripts\activate --> .\env\Scripts\activate
+5. python virtual environments: https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/26/python-virtual-env/; https://docs.python.org/3/library/venv.html; https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment
+6. changing virtual environments in atom: https://youtu.be/qvSpZXT8XhU?t=712
+7. setting up MySQL instance on Google Cloud Platform: https://cloud.google.com/sql/docs/mysql/quickstart; mysql-instance-password ; mysql-instance-id2
+8. setting up sql on google cloud walkthrough: https://towardsdatascience.com/sql-on-the-cloud-with-python-c08a30807661
+9. sqlalchemy and dataframe: https://www.sqlshack.com/introduction-to-sqlalchemy-in-pandas-dataframe/ ; https://hackersandslackers.com/connecting-pandas-to-a-sql-database-with-sqlalchemy/
+10. managing cloud sql costs: https://www.reddit.com/r/googlecloud/comments/eregto/cloud_sql_prices_extremely_high/ ; google cloud pricing calculator: https://cloud.google.com/products/calculator#id=37f80ae2-aeb6-4c38-9f11-94297f24bf86
+11. github repo to google cloud: https://cloud.google.com/source-repositories/docs/mirroring-a-github-repository
+12. how to create requirements.txt file: https://www.idkrtm.com/what-is-the-python-requirements-txt/
+
+
+
+
+Finance Links:
+Difference between GSPC and SPY: https://quant.stackexchange.com/questions/18201/why-the-difference-between-spy-and-gspc
