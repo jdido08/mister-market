@@ -7,6 +7,8 @@ mysql:
   DB_HOSTNAME: 34.133.165.86
   DB_PORT: 3306
   DB_NAME: mysql_test_db
+  RAW_DATA_DB_NAME: raw_data 
+  DERIVED_DATA_DB_NAME: derived_data
 alphavantage:
   API_KEY: FLS6AFYRTY2HHKHW
   PREMIUM_API_KEY: L7F2EVPKMZ3ZVJFQ

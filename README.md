@@ -1,3 +1,3 @@
 # Mister Market's Price-to-PlainEnglish #
 
-** Market Action Translations to Keep You Looking Smart **
+** Translating Market Action to Keep You Looking Smart **

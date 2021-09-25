@@ -12,6 +12,7 @@ Programming Links:
 10. managing cloud sql costs: https://www.reddit.com/r/googlecloud/comments/eregto/cloud_sql_prices_extremely_high/ ; google cloud pricing calculator: https://cloud.google.com/products/calculator#id=37f80ae2-aeb6-4c38-9f11-94297f24bf86
 11. github repo to google cloud: https://cloud.google.com/source-repositories/docs/mirroring-a-github-repository
 12. how to create requirements.txt file: https://www.idkrtm.com/what-is-the-python-requirements-txt/
+13. gitignore file: https://git-scm.com/docs/gitignore#:~:text=A%20gitignore%20file%20specifies%20intentionally,gitignore%20file%20specifies%20a%20pattern.&text=gitignore%20files%20in%20its%20repository,part%20of%20the%20project%20build.
 
 
 
