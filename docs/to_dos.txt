@@ -5,5 +5,4 @@
    --> sp_500_constituents
    --> company data
 --> figure out derived data infra
-
-   
+--> need to create logs on when things updated, etc..
