@@ -15,7 +15,7 @@ Programming Links:
 13. gitignore file: https://git-scm.com/docs/gitignore#:~:text=A%20gitignore%20file%20specifies%20intentionally,gitignore%20file%20specifies%20a%20pattern.&text=gitignore%20files%20in%20its%20repository,part%20of%20the%20project%20build.
 14. how to use gitignore: https://stackoverflow.com/questions/25436312/gitignore-not-working
 15. using cloud functions: https://cloud.google.com/functions/docs/quickstart-python ; https://codelabs.developers.google.com/codelabs/cloud-functions-python-http/#5 ; https://medium.com/@timhberry/getting-started-with-python-for-google-cloud-functions-646a8cddbb33
-16. cloning source repository in GCP: https://cloud.google.com/source-repositories/docs/cloning-repositories 
+16. cloning source repository in GCP: https://cloud.google.com/source-repositories/docs/cloning-repositories
 
 
 
@@ -24,3 +24,7 @@ Programming Links:
 
 Finance Links:
 Difference between GSPC and SPY: https://quant.stackexchange.com/questions/18201/why-the-difference-between-spy-and-gspc
+
+
+random:
+how to deal with pd.read_html issue rllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] --> https://appdividend.com/2020/06/19/python-certifi-example-how-to-use-ssl-certificate-in-python/ 
