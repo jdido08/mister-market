@@ -6,3 +6,6 @@
    --> company data
 --> figure out derived data infra
 --> need to create logs on when things updated, etc..
+
+--> create master branch which I want to keep on google cloud and keep running
+--> create local dev brnach 

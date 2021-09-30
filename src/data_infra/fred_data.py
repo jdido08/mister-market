@@ -122,7 +122,7 @@ def update_tips_yields():
         print("ERROR: Can't update tips_yields")
 
 
-#engine.dispose()
+
 
 # table_name = 'sp500'
 # table_df = pd.read_sql_table(

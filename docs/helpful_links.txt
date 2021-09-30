@@ -14,8 +14,8 @@ Programming Links:
 12. how to create requirements.txt file: https://www.idkrtm.com/what-is-the-python-requirements-txt/
 13. gitignore file: https://git-scm.com/docs/gitignore#:~:text=A%20gitignore%20file%20specifies%20intentionally,gitignore%20file%20specifies%20a%20pattern.&text=gitignore%20files%20in%20its%20repository,part%20of%20the%20project%20build.
 14. how to use gitignore: https://stackoverflow.com/questions/25436312/gitignore-not-working
-15. using cloud functions: ttps://cloud.google.com/functions/docs/quickstart-python ; https://codelabs.developers.google.com/codelabs/cloud-functions-python-http/#5 ; https://medium.com/@timhberry/getting-started-with-python-for-google-cloud-functions-646a8cddbb33
-
+15. using cloud functions: https://cloud.google.com/functions/docs/quickstart-python ; https://codelabs.developers.google.com/codelabs/cloud-functions-python-http/#5 ; https://medium.com/@timhberry/getting-started-with-python-for-google-cloud-functions-646a8cddbb33
+16. cloning source repository in GCP: https://cloud.google.com/source-repositories/docs/cloning-repositories 
 
 
 
