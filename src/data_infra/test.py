@@ -35,3 +35,6 @@ engine = sqlalchemy.create_engine(
 sp500_constituents_df = pd.read_sql_table('sp500_constituents', engine) #read in current sp500_constituents table
 sp500_constituents_df['date'] = pd.to_datetime(sp500_constituents_df['date'], utc=True)
 print(sp500_constituents_df)
+
+
+#test
