@@ -8,4 +8,78 @@
 --> need to create logs on when things updated, etc..
 
 --> create master branch which I want to keep on google cloud and keep running
---> create local dev brnach 
+--> create local dev brnach
+
+
+10/10/2021
+
+-- figure out google Functions
+-- maube need to use google app engine -- tbd
+
+10/13/2021
+-- setup VM instance
+-- get code onto VM instance
+-- setup cron job with raw data update scripts
+
+
+10/14/2021:
+-- setup vm instance
+-- get permissions setup / understand google service accounts
+
+
+
+
+
+learn SSH
+
+New approach dont use google cloud source repo --> create vm instance, clone github repo to vm instance
+10/16/2021 Steps
+
+Steps for setting up VM Instance and cloning github repo to it
+1) Create VM Instance: https://cloud.google.com/compute/docs/instances/create-start-instance#gcloud
+2) Allow HTTP and HTTPS traffic on the Firewall
+3) Setup VM instance
+   3.1) sudo apt-get update  --> update vm instance
+   3.2) sudo apt-get install python --> install python
+   3.3) sudo apt-get install python3 python-dev python3-dev \
+          build-essential libssl-dev libffi-dev \
+          libxml2-dev libxslt1-dev zlib1g-dev \
+          python-pip
+   3.4) sudo apt install git --> install git
+   3.5) sudo apt-get install python3-venv --> need to instrall virtual environments
+   3.6) sudo apt-get install build-essential libssl-dev libffi-dev \
+          python3-dev cargo
+        python3 -m pip install poetry --> probably dont need THIS
+   3.7) python3 -m pip install --upgrade pip  
+4) Generate SSH Keys on VM instance https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+  4.1) ssh-keygen -t ed25519 -C "your_email@example.com" --> create keys; you also specify name, file place, password
+  4.2) eval "$(ssh-agent -s)" --> ensure the ssh-agent is running
+  4.3) ssh-add ~/.ssh/[key name] --> add your SSH private key to the ssh-agent
+5) Add public key to github account
+   5.1) cat < ~/.ssh/[key name].pub --> copy public key from VM instance
+   5.2) add key in github --> https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
+6) git clone git@github.com:jdido08/mister-market.git --> Clone github repo to vm instance
+7) pip install -r requirements.txt --> download project requirements
+
+
+
+Steps for setting up SSH for accessing VM Instance (server) from local machine
+1.) ssh-keygen --> create keys on local machine
+2.) eval $(ssh-agent -s) --> enable ssh-agent
+3.) ssh-add ~/.ssh/id_rsa --> add keys to ssh-agent on local machine
+4.) add public key to ssh-agent on server; GCP lets you do this in the settings of a VM instance
+5.) ssh [username]@[ip] e.g. "ssh jdido08@35.243.234.4" --> log into server via local machine
+
+
+some other links:
+1.) https://datasciencecampus.github.io/creating-a-gcp-vm-and-run-cron/
+2.)
+
+
+setting up local environment --> you want to create a requirements.txt that is clean, just has the resources you need for the app
+1.) python virtual environments: https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/26/python-virtual-env/; https://docs.python.org/3/library/venv.html; https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment
+2.) changing virtual environments in atom: https://youtu.be/qvSpZXT8XhU?t=712
+
+
+on vm instance
+-- enable Cloud Source Reposoties

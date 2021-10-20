@@ -32,7 +32,7 @@ def update_raw_data_sp500_constituents():
 
 
 ### TEST ###
-# update_raw_data_sp500_prices()
+update_raw_data_sp500_prices()
 # update_raw_data_treasury_yields()
 # update_raw_data_tips_yields()
 # update_raw_data_sp500_constituents()

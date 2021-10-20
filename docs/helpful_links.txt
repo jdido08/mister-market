@@ -16,6 +16,8 @@ Programming Links:
 14. how to use gitignore: https://stackoverflow.com/questions/25436312/gitignore-not-working ; https://stackoverflow.com/questions/25436312/gitignore-not-working/25436481
 15. using cloud functions: https://cloud.google.com/functions/docs/quickstart-python ; https://codelabs.developers.google.com/codelabs/cloud-functions-python-http/#5 ; https://medium.com/@timhberry/getting-started-with-python-for-google-cloud-functions-646a8cddbb33
 16. cloning source repository in GCP: https://cloud.google.com/source-repositories/docs/cloning-repositories
+17. Creating VM instance on Google Cloud Compute: https://cloud.google.com/compute/docs/instances/create-start-instance#gcloud
+18. Getting things started on VM: https://cloud.google.com/python/docs/getting-started/getting-started-on-compute-engine
 
 
 
