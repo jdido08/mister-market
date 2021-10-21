@@ -25,9 +25,9 @@ engine = sqlalchemy.create_engine(
         database=db_name,  # e.g. "my-database-name"
     ),
     connect_args = {
-        'ssl_ca': 'ssl/server-ca.pem',
-        'ssl_cert': 'ssl/client-cert.pem',
-        'ssl_key': 'ssl/client-key.pem'
+        'ssl_ca': '~/mister-market/ssl/server-ca.pem',
+        'ssl_cert': '~/mister-market/ssl/client-cert.pem',
+        'ssl_key': '~/mister-market/ssl/client-key.pem'
     }
 )
 
