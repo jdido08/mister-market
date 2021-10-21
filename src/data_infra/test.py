@@ -21,13 +21,13 @@ engine = sqlalchemy.create_engine(
         username=db_user,  # e.g. "my-database-user"
         password=db_pass,  # e.g. "my-database-password"
         host=db_hostname,  # e.g. "127.0.0.1"
-        port=db_port,  # e.g. 3306
+        port=db_port,      # e.g. 3306
         database=db_name,  # e.g. "my-database-name"
     ),
     connect_args = {
-        'ssl_ca': '~/mister-market/ssl/server-ca.pem',
-        'ssl_cert': '~/mister-market/ssl/client-cert.pem',
-        'ssl_key': '~/mister-market/ssl/client-key.pem'
+        'ssl_ca': 'server-ca.pem',
+        'ssl_cert': 'client-cert.pem',
+        'ssl_key': 'client-key.pem'
     }
 )
 
