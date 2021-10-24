@@ -83,15 +83,14 @@ steps for updating project --> from local environment to vm instance
     why: setting up local environment --> you want to create a requirements.txt that is clean, just has the resources you need for the app
     1.a) python virtual environments: https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/26/python-virtual-env/; https://docs.python.org/3/library/venv.html; https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment
     1.b) changing virtual environments in atom: https://youtu.be/qvSpZXT8XhU?t=712
-    1.c) env\Scripts\activate --> this is how you actviate virtual environemnt in windows 
+    1.c) env\Scripts\activate --> this is how you actviate virtual environemnt in windows
 2.) update project code etc...
-3.) update requirements.txt
-
-
-updating vm instance project:
-1.) navigate to project
-2.) git pull --> pull latest repo
-3.) pip3 install -r requirements.txt --> pull latest
+3.) pip freeze > requirements.txt ----> update requirements.txt
+4.) stage, push updates to github repo
+5.) login into vm instance
+6.) navigate to project in vm
+7.) git pull --> pull latest repo
+8.) pip3 install -r requirements.txt --> install latest dependencies onto vm 
 
 
 10/21/2021:
