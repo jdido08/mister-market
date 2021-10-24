@@ -46,27 +46,28 @@ print(db_ssl_ca_path)
 print(db_ssl_cert_path)
 print(db_ssl_key_path)
 
-#https://towardsdatascience.com/sql-on-the-cloud-with-python-c08a30807661
-# engine = sqlalchemy.create_engine(
-#      sqlalchemy.engine.url.URL.create(
-#         drivername="mysql+pymysql",
-#         username=db_user,  # e.g. "my-database-user"
-#         password=db_pass,  # e.g. "my-database-password"
-#         host=db_hostname,  # e.g. "127.0.0.1"
-#         port=db_port,  # e.g. 3306
-#         database=db_name,  # e.g. "my-database-name"
-#     ),
-#     connect_args = {
-#         'ssl_ca': db_ssl_ca_path ,
-#         'ssl_cert': db_ssl_cert_path,
-#         'ssl_key': db_ssl_key_path
-#     }
-# )
-#
-#
-# try:
-#     sp500_price = get_sp500_prices()
-#     sp500_price.to_sql('sp500_prices', engine, if_exists='replace', index=False, chunksize=500)
-#     print("SUCCESS: sp500_prices updated")
-# except Exception as e:
-#     print("Can't update sp500_prices -- Error: ", e)
+https://towardsdatascience.com/sql-on-the-cloud-with-python-c08a30807661
+engine = sqlalchemy.create_engine(
+     sqlalchemy.engine.url.URL.create(
+        drivername="mysql+pymysql",
+        username=db_user,  # e.g. "my-database-user"
+        password=db_pass,  # e.g. "my-database-password"
+        host=db_hostname,  # e.g. "127.0.0.1"
+        port=db_port,  # e.g. 3306
+        database=db_name,  # e.g. "my-database-name"
+    ),
+    connect_args = {
+        'ssl_ca': db_ssl_ca_path ,
+        'ssl_cert': db_ssl_cert_path,
+        'ssl_key': db_ssl_key_path
+    }
+)
+
+
+try:
+    sp500_price = get_sp500_prices()
+    print('get sp500 sucesss')
+    sp500_price.to_sql('sp500_prices', engine, if_exists='replace', index=False, chunksize=500)
+    print("SUCCESS: sp500_prices updated")
+except Exception as e:
+    print("Can't update sp500_prices -- Error: ", e)
