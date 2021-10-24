@@ -46,7 +46,7 @@ print(db_ssl_ca_path)
 print(db_ssl_cert_path)
 print(db_ssl_key_path)
 
-https://towardsdatascience.com/sql-on-the-cloud-with-python-c08a30807661
+#https://towardsdatascience.com/sql-on-the-cloud-with-python-c08a30807661
 engine = sqlalchemy.create_engine(
      sqlalchemy.engine.url.URL.create(
         drivername="mysql+pymysql",
