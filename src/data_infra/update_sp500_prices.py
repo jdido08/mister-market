@@ -6,13 +6,11 @@ import sqlalchemy #to save to db
 import os #to get file path
 import logging #to log
 
-logging.basicConfig(filename='logs.log',
+logging.basicConfig(filename= os.path.dirname(os.path.abspath(__file__)) + '/ingest_logs.log',
     level=logging.DEBUG,
     filemode='w',
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p')
-
-
 
 
 ### FRED FUNCTIONS ###
@@ -75,5 +73,7 @@ try:
     sp500_price = get_sp500_prices()
     sp500_price.to_sql('sp500_prices', engine, if_exists='replace', index=False, chunksize=500)
     logging.info('SUCCESS: sp500_prices updated')
+    print('SUCCESS: sp500_prices updated')
 except Exception as e:
     logging.error("Can't update sp500_prices -- Error: ", e)
+    print("Can't update sp500_prices -- Error: ", e)
