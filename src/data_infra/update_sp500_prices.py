@@ -1,10 +1,17 @@
-import pandas_datareader as web
+import pandas_datareader as web # to get fred data
 import pandas as pd
 import datetime
-import yaml
-import sqlalchemy
-import sys
-import os
+import yaml #to open config file
+import sqlalchemy #to save to db
+import os #to get file path
+import logging #to log
+
+logging.basicConfig(filename='logs.log',
+    level=logging.DEBUG,
+    filemode='w',
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%m/%d/%Y %I:%M:%S %p')
+
 
 
 
@@ -66,8 +73,7 @@ engine = sqlalchemy.create_engine(
 
 try:
     sp500_price = get_sp500_prices()
-    print('get sp500 sucesss')
     sp500_price.to_sql('sp500_prices', engine, if_exists='replace', index=False, chunksize=500)
-    print("SUCCESS: sp500_prices updated")
+    logging.info('SUCCESS: sp500_prices updated')
 except Exception as e:
-    print("Can't update sp500_prices -- Error: ", e)
+    logging.error("Can't update sp500_prices -- Error: ", e)
