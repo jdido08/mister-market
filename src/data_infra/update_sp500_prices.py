@@ -6,6 +6,7 @@ import sqlalchemy #to save to db
 import os #to get file path
 import logging #to log
 
+
 logging.basicConfig(filename= os.path.dirname(os.path.abspath(__file__)) + '/ingest_logs.log',
     level=logging.DEBUG,
     filemode='w',
@@ -34,7 +35,9 @@ def get_sp500_prices():
 # print(os.getcwd())
 # print(os.path.dirname(os.path.abspath(__file__)))
 
-with open("config.yml", "r") as ymlfile:
+config_file_path = os.path.dirname(os.path.abspath(__file__)) + "/config.yml"
+
+with open(config_file_path, "r") as ymlfile:
     cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
 db_user = cfg["mysql"]["DB_USER"]
@@ -71,6 +74,7 @@ engine = sqlalchemy.create_engine(
 
 try:
     sp500_price = get_sp500_prices()
+    print(sp500_price)
     sp500_price.to_sql('sp500_prices', engine, if_exists='replace', index=False, chunksize=500)
     logging.info('SUCCESS: sp500_prices updated')
     print('SUCCESS: sp500_prices updated')

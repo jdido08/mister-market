@@ -90,7 +90,19 @@ steps for updating project --> from local environment to vm instance
 5.) login into vm instance
 6.) navigate to project in vm
 7.) git pull --> pull latest repo
-8.) pip3 install -r requirements.txt --> install latest dependencies onto vm 
+8.) pip3 install -r requirements.txt --> install latest dependencies onto vm
+
+
+how to schedule crontab jobs -->
+1.) crontab -e --> go to cron tab editor
+2.) [* * * * *] [command to run] --> pick time to run (use https://crontab.guru/ to help) and then command to run at that time
+    example: 30 19 * * * python3 mister-market/scr/data_infra/update_sp500_prices.py
+3.) crontab -l --> to see all cron jobs existing
+4.) grep CRON /var/log/syslog --> see all cron job logs 
+
+
+logging in python:
+1.) there are 5 different logging 'levels': debug, info, warning, error, critical
 
 
 10/21/2021:

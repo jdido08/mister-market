@@ -1,3 +1,3 @@
-10/24/2021 10:23:54 PM - DEBUG - Starting new HTTPS connection (1): fred.stlouisfed.org:443
-10/24/2021 10:23:54 PM - DEBUG - https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=SP500 HTTP/1.1" 200 15304
-10/24/2021 10:23:56 PM - INFO - SUCCESS: sp500_prices updated
+10/25/2021 11:29:42 PM - DEBUG - Starting new HTTPS connection (1): fred.stlouisfed.org:443
+10/25/2021 11:29:43 PM - DEBUG - https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=SP500 HTTP/1.1" 200 15295
+10/25/2021 11:29:45 PM - INFO - SUCCESS: sp500_prices updated

@@ -19,7 +19,7 @@ Programming Links:
 17. Creating VM instance on Google Cloud Compute: https://cloud.google.com/compute/docs/instances/create-start-instance#gcloud
 18. Getting things started on VM: https://cloud.google.com/python/docs/getting-started/getting-started-on-compute-engine
 19. How to create crontab jobs: https://www.adminschoice.com/crontab-quick-reference ; https://youtu.be/v952m13p-b4 ; https://crontab.guru/ ; https://youtu.be/5bTkiV_Aadc
-
+20. Logging in Python: https://youtu.be/W1vOdzHCa-I ; https://docs.python.org/3/howto/logging.html ;
 
 
 
