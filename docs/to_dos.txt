@@ -98,11 +98,16 @@ how to schedule crontab jobs -->
 2.) [* * * * *] [command to run] --> pick time to run (use https://crontab.guru/ to help) and then command to run at that time
     example: 30 19 * * * python3 mister-market/scr/data_infra/update_sp500_prices.py
 3.) crontab -l --> to see all cron jobs existing
-4.) grep CRON /var/log/syslog --> see all cron job logs 
+4.) grep CRON /var/log/syslog --> see all cron job logs
+5.) add "> [log file path] 2>&1" to crontab job to record output of cronjob, which can be helpful in debugging --> see https://www.thegeekstuff.com/2012/07/crontab-log/
 
 
 logging in python:
 1.) there are 5 different logging 'levels': debug, info, warning, error, critical
+
+
+how to get rid of local changes on vm:
+1.) git reset --hard
 
 
 10/21/2021:

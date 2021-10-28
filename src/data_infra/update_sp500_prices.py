@@ -7,18 +7,10 @@ import os #to get file path
 import logging #to log
 
 
-logging.basicConfig(filename= os.path.dirname(os.path.abspath(__file__)) + '/ingest_logs.log',
-    level=logging.DEBUG,
-    filemode='w',
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%m/%d/%Y %I:%M:%S %p')
-
-
 ### FRED FUNCTIONS ###
-
 #get sp500 price data from FRED #https://fred.stlouisfed.org/series/SP500
 def get_sp500_prices():
-    sp500_fred_start_date = datetime.datetime(2010, 9, 13).strftime("%Y-%m-%d") #start date on FRED wesbite; I have a csv of historical data if I ever need it
+    sp500_fred_start_date = datetime.datetime(2010, 9, 13).strftime("%Y-%m-%d") #FRED provides last 10 years of data; will need to loop back at this at some point
     today = datetime.date.today().strftime("%Y-%m-%d") #get most up to date data on FRED website
     df= web.DataReader(['SP500'], 'fred', sp500_fred_start_date, today)
 
@@ -30,10 +22,12 @@ def get_sp500_prices():
 
     return df
 
-# print(sys.path[0])
-# print(os.path.abspath(os.getcwd()))
-# print(os.getcwd())
-# print(os.path.dirname(os.path.abspath(__file__)))
+#script part
+logging.basicConfig(filename= os.path.dirname(os.path.abspath(__file__)) + '/ingest_logs.log',
+    level=logging.DEBUG,
+    filemode='w',
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%m/%d/%Y %I:%M:%S %p')
 
 config_file_path = os.path.dirname(os.path.abspath(__file__)) + "/config.yml"
 
@@ -50,9 +44,6 @@ db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pe
 db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem'
 db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'\
 
-# print(db_ssl_ca_path)
-# print(db_ssl_cert_path)
-# print(db_ssl_key_path)
 
 #https://towardsdatascience.com/sql-on-the-cloud-with-python-c08a30807661
 engine = sqlalchemy.create_engine(
@@ -74,7 +65,7 @@ engine = sqlalchemy.create_engine(
 
 try:
     sp500_price = get_sp500_prices()
-    print(sp500_price)
+    #print(sp500_price)
     sp500_price.to_sql('sp500_prices', engine, if_exists='replace', index=False, chunksize=500)
     logging.info('SUCCESS: sp500_prices updated')
     print('SUCCESS: sp500_prices updated')
