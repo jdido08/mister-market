@@ -142,3 +142,4 @@ cython_debug/
 # JMD ADDED ssl
 ssl/
 config.yml
+data/
