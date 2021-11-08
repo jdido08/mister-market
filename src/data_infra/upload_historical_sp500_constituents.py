@@ -74,6 +74,6 @@ engine = sqlalchemy.create_engine(
 #     historical_sp500_constituents.to_sql('sp500_constituents', engine, if_exists='replace', index=False, chunksize=500)
 #     logging.info('SUCCESS: sp500_constituents uploaded')
 #     print("SUCCESS: sp500_constituents uploaded")
-# except:
+# except Exception as e:
 #     logging.error("Can't upload sp500_constituents -- Error: ", e)
 #     print("ERROR: Can't upload sp500_constituentss")

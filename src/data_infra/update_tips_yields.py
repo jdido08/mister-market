@@ -76,6 +76,6 @@ try:
     tips_yields.to_sql('tips_yields', engine, if_exists='replace', index=False, chunksize=500)
     logging.info('SUCCESS: tips_yields updated')
     print("SUCCESS: tips_yields updated")
-except:
+except Exception as e:
     logging.error("Can't update tips_yields -- Error: ", e)
     print("ERROR: Can't update tips_yields")

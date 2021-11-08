@@ -103,6 +103,6 @@ try:
     sp500_constituents_df.to_sql('sp500_constituents', engine, if_exists='replace', index=False, chunksize=500)
     logging.info('SUCCESS: sp500_constituents updated')
     print("SUCCESS: sp500_constituents updated")
-except:
+except Exception as e:
     logging.error("Can't update sp500_constituents -- Error: ", e)
     print("Can't update sp500_constituents -- Error: ", e)

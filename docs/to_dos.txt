@@ -113,3 +113,34 @@ how to get rid of local changes on vm:
 10/21/2021:
 -- get os.path working to reference files in mister-market Folder
 --
+
+
+10/30/2021:
+-- figure out fundamental data upload
+-- decisions: keep free version of alpha vantage -- too much work already done, dont want to go backwards, ill can just run once a week
+-- way to limit pulls:
+1.) overview data --> only needs to be pulled once
+2.) data i need to construct company measures (for now):
+ -- stock --> for price
+ -- earnings data
+ -- balance sheet
+ -- adjusted stock for dividneds
+
+ 3.) idea -- besides price daily; i can get earnings calendar and only pull data when i need to <-- this is the way to go; this assumes too that earnings and 10Q/K get released the same day
+
+ 11/2/2021:
+ -- need to make false assumption that earnings and financial reports (income, cash flow, balance sheet all released together --> this is not true; earnings are released first)
+
+
+-- assume:
+--> timeline: earnings, balance sheet, dividneds
+--> be smart about which companies to update: only those date > earnings date AND fiscalEnding < past fiscial ending
+
+11/3/2021:
+-- learned that alpha vantage has a program that'll remove the 500 day cap (still limits to 5 query per minute) so this works for me!
+-- will continue to build this out https://www.alphatournament.com/dashboard/
+
+
+11/7/2021:
+-- need to clean up data ingest a bit to remove data i dont need
+-- e.g. dont need to save all data

@@ -2,13 +2,13 @@ import requests
 import pandas as pd
 import csv
 import io
-
 import yaml
 
 #alphavantage documentation: https://www.alphavantage.co/documentation/
 
 with open("config.yml", "r") as ymlfile:
     cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+    alpha_vantage_api_key =  cfg["alphavantage"]["API_KEY"]
 
 #core functions
 
@@ -18,7 +18,7 @@ def get_alpha_vantage_fundamental_data(function, ticker, json_object):
     params = {'function': function,
              'symbol': ticker,
              "datatype": 'json',
-             'apikey':  cfg["alphavantage"]["API_KEY"]}
+             'apikey': alpha_vantage_api_key}
     response = requests.get(base_url, params=params)
     response = response.json()
     if(json_object != None):
@@ -34,7 +34,7 @@ def get_alpha_vantage_stock_time_series_data(function, ticker, outputsize):
              'symbol': ticker,
              "datatype": 'csv',
              'outputsize': outputsize, #output size options: full, compact
-             'apikey': cfg["alphavantage"]["API_KEY"]}
+             'apikey': alpha_vantage_api_key}
     response = requests.get(base_url, params=params)
     df = pd.read_csv(io.StringIO(response.text))
     df['ticker'] = ticker #create column with ticker
@@ -87,8 +87,10 @@ def get_av_company_overview(ticker):
     return df
 
 
+
 #test code
-#df = get_av_daily_adjusted_stock('XLE','full')
+df = get_av_adjusted_stock('ABC','full')
+print(df)
 #df =  get_av_company_overview('XLE')
 #df.to_csv('xle_stock_test.csv')
 #print(df)
