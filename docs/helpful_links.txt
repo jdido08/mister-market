@@ -23,10 +23,7 @@ Programming Links:
 
 
 
-
 Finance Links:
-Difference between GSPC and SPY: https://quant.stackexchange.com/questions/18201/why-the-difference-between-spy-and-gspc
-
-
-random:
-how to deal with pd.read_html issue rllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] --> https://appdividend.com/2020/06/19/python-certifi-example-how-to-use-ssl-certificate-in-python/
+1. Classic Book on Security Pricing: Options, Futures and Other Derivatives by Hull
+2. Book on Beta / Risk Premiums: Expected Returns: An Investor's Guide to Harvesting Market Rewards by Antti Ilmanen
+3. Difference between GSPC and SPY: https://quant.stackexchange.com/questions/18201/why-the-difference-between-spy-and-gspc
