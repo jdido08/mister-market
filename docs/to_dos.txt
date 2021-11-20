@@ -68,4 +68,8 @@
 - basic data infra is done
 
 11/11/2021:
-- need to get alphavantage data 
+- need to get alphavantage data
+
+long-term plans:
+- i need to be able to compute forward price of sp500 for any day
+- attribution model -> compare forward price and real price and attribut difference

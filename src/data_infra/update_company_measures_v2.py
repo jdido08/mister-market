@@ -7,60 +7,10 @@ from functools import reduce
 
 ### FUNCTIONS ###
 
-def get_price(ticker):
-    #get raw price
-    price_df = pd.read_sql_table('company_stock', engine)
-    price_df = price_df[price_df['ticker'] == ticker]
-    price_df = price_df[['date','ticker','close']]
-    #price_df['date'] = pd.to_datetime(price_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-    price_df['date'] = pd.to_datetime(price_df['date'], utc=True).dt.strftime("%Y-%m-%d")
-    price_df = price_df.sort_values(by='date', ascending=True)
-
-    #get adjusted price
-    adjusted_price_df = pd.read_sql_table('company_adjusted_stock', engine)
-    adjusted_price_df = adjusted_price_df[adjusted_price_df['ticker'] == ticker]
-    adjusted_price_df = adjusted_price_df[['date','ticker','adjusted_close']]
-    #adjusted_price_df['date'] = pd.to_datetime(adjusted_price_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-    adjusted_price_df['date'] = pd.to_datetime(adjusted_price_df['date'], utc=True).dt.strftime("%Y-%m-%d")
-    adjusted_price_df = adjusted_price_df.sort_values(by='date', ascending=True)
-
-    #merge dataframes
-    price_df = pd.merge(price_df, adjusted_price_df, on=['date','ticker'], how='left')
-
-    #prep output
-    price_df = price_df.rename(columns={'close':'close_price', 'adjusted_close':'adjusted_close_price'})
-    price_df = price_df[['ticker','date','close_price', 'adjusted_close_price']]
-
-    return price_df
-
-
-def get_shares_outstanding(ticker):
+def get_shares_outstanding(report_date_df, bs_df, adjusted_stock_df):
     # *****  this is wrong!! earnings release does not necessary means report date ****#
-    report_date_df = pd.read_sql_table('company_earnings', engine)
-    report_date_df = report_date_df[report_date_df['ticker'] == ticker]
-    report_date_df = report_date_df[['date', 'fiscalDateEnding']]
-    #report_date_df['date'] = pd.to_datetime(report_date_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-    report_date_df['date'] = pd.to_datetime(report_date_df['date'], utc=True).dt.strftime("%Y-%m-%d")
-    report_date_df = report_date_df.sort_values(by='date', ascending=True)
-
-    bs_df = pd.read_sql_table('company_balance_sheet', engine)
-    bs_df = bs_df[bs_df['ticker'] == ticker]
-    bs_df = bs_df[['ticker','fiscalDateEnding','commonStockSharesOutstanding']]
-    bs_df[bs_df['commonStockSharesOutstanding'] == 'None'] = None
-
-    #get adjusted price
-    adjusted_stock_df = pd.read_sql_table('company_adjusted_stock', engine)
-    adjusted_stock_df = adjusted_stock_df[adjusted_stock_df['ticker'] == ticker]
-    adjusted_stock_df  = adjusted_stock_df[['date','ticker','split_coefficient']]
-    #adjusted_stock_df['date'] = pd.to_datetime(adjusted_stock_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-    adjusted_stock_df['date'] = pd.to_datetime(adjusted_stock_df['date'], utc=True).dt.strftime("%Y-%m-%d")
-    adjusted_stock_df = adjusted_stock_df.sort_values(by='date', ascending=True)
-
-    shares_df = pd.merge(report_date_df, bs_df, on='fiscalDateEnding', how='left') ### THERES an implicit assumption here that earnings release day = quarterlyReports day which is false
+    shares_df = pd.merge(report_date_df, bs_df, on=['ticker','last_reported_quarter'], how='left') ### THERES an implicit assumption here that earnings release day = quarterlyReports day which is false
     shares_df = pd.merge(adjusted_stock_df, shares_df, on=['date','ticker'], how='left')
-
-    #massage data types
-    shares_df = shares_df.rename(columns={'commonStockSharesOutstanding':'last_reported_shares_outstanding','fiscalDateEnding':'last_reported_quarter'})
 
     shares_df['last_reported_shares_outstanding'] = shares_df['last_reported_shares_outstanding'].fillna(method='ffill')
     shares_df['last_reported_quarter'] = shares_df['last_reported_quarter'].fillna(method='ffill')
@@ -79,15 +29,7 @@ def get_shares_outstanding(ticker):
     shares_df = shares_df[['ticker','date','shares_outstanding']]
     return shares_df
 
-def get_dividends(ticker,shares_df):
-    #get dividend data from adjusted price data
-    dividend_df = pd.read_sql_table('company_adjusted_stock', engine)
-    dividend_df = dividend_df[dividend_df['ticker'] == ticker]
-    dividend_df = dividend_df[['ticker','date','dividend_amount']]
-    dividend_df[dividend_df['dividend_amount'] == 'None'] = None
-    #dividend_df['date'] = pd.to_datetime(dividend_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-    dividend_df['date'] = pd.to_datetime(dividend_df['date'], utc=True).dt.strftime("%Y-%m-%d")
-    dividend_df = dividend_df.sort_values(by='date', ascending=True)
+def get_dividends(dividend_df,shares_df):
 
     #merge dividend and shares count
     dividend_df = pd.merge(dividend_df, shares_df, on=['ticker','date'], how='left')
@@ -121,19 +63,7 @@ def get_dividends(ticker,shares_df):
     return dividend_df
 
 #need to fix
-def get_earnings(ticker, shares_df):
-    #get company earnings data
-    earnings_df = pd.read_sql_table('company_earnings', engine)
-    earnings_df = earnings_df[earnings_df['ticker'] == ticker]
-    earnings_df = earnings_df[['date', 'ticker', 'reportedEPS']]
-    #earnings_df['date'] = pd.to_datetime(earnings_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-    earnings_df['date'] = pd.to_datetime(earnings_df['date'], utc=True).dt.strftime("%Y-%m-%d")
-    earnings_df = earnings_df.sort_values(by='date', ascending=True)
-
-    #massage dataframe
-    earnings_df = earnings_df.rename(columns={'reportedEPS':'non_gaap_eps'})
-    earnings_df[earnings_df['non_gaap_eps'] == 'None'] = None
-    earnings_df['non_gaap_eps'] = earnings_df['non_gaap_eps'].astype(float)
+def get_earnings(earnings_df, shares_df):
 
     #merge earnings and shares count
     earnings_df = pd.merge(earnings_df, shares_df, on=['ticker','date'], how='left').reset_index()
@@ -164,19 +94,12 @@ def get_earnings(ticker, shares_df):
     #calc eps
     earnings_df['non_gaap_eps_ttm'] = earnings_df['non_gaap_earnings_ttm'] / earnings_df['shares_outstanding']
 
-
     #prep dataframe
     earnings_df['ticker'] = earnings_df['ticker'].fillna(value=ticker) #formatting
     earnings_df = earnings_df[['date', 'ticker', 'non_gaap_eps_ttm', 'non_gaap_earnings_ttm']]
 
     return earnings_df
 
-def get_meta_data(ticker):
-    meta_data_df = pd.read_sql_table('company_overview', engine)
-    meta_data_df = meta_data_df[meta_data_df['ticker'] == ticker]
-    meta_data_df = meta_data_df[['ticker','Sector','Industry', 'Exchange','Currency','Name']]
-    meta_data_df = meta_data_df.rename(columns={"Sector":"sector", "Industry":"industry","Currency":"currency","Name":"name", "Exchange":"exchange"}) #style thing much make lowe case some column names
-    return meta_data_df
 
 
 #### UPDATE COMPANY DATA SCRIPT ####
@@ -237,39 +160,112 @@ tickers = sorted(tickers) #sort company list alphabetically
 #tickers = tickers[0:5] #get first 10 tickers
 #tickers = ["ABC"]
 
-company_measures_frames = []
+#get raw price
+price_df_sql_query = "SELECT * FROM company_stock WHERE date > 2017-01-01"
+price_df = pd.read_sql_query(price_df_sql_query, engine)
+price_df = price_df[['date','ticker','close']]
+price_df['date'] = pd.to_datetime(price_df['date'], utc=True).dt.strftime("%Y-%m-%d")
+price_df = price_df.sort_values(by='date', ascending=True)
+price_df = price_df.rename(columns={'close':'close_price', 'adjusted_close':'adjusted_close_price'})
+print("print_df read")
+
+
+#get adjusted price
+adjusted_stock_df_sql_query = "SELECT * FROM company_adjusted_stock WHERE date > 2016-01-01"
+adjusted_stock_df = pd.read_sql_query(adjusted_stock_df_sql_query, engine)
+print("adjusted_stock_df read")
+
+adjusted_price_df = adjusted_stock_df [['date','ticker','adjusted_close']].copy()
+adjusted_price_df = adjusted_price_df[adjusted_price_df['date'] > '2017-01-01']
+adjusted_price_df['date'] = pd.to_datetime(adjusted_price_df['date'], utc=True).dt.strftime("%Y-%m-%d")
+adjusted_price_df = adjusted_price_df.sort_values(by='date', ascending=True)
+adjusted_price_df = price_df.rename(columns={'adjusted_close':'adjusted_close_price'})
+
+dividend_df = adjusted_stock_df [['ticker','date','dividend_amount']].copy()
+dividend_df[dividend_df['dividend_amount'] == 'None'] = None
+dividend_df['date'] = pd.to_datetime(dividend_df['date'], utc=True).dt.strftime("%Y-%m-%d")
+dividend_df = dividend_df.sort_values(by='date', ascending=True)
+
+
+adjusted_stock_df  = adjusted_stock_df[['date','ticker','split_coefficient']]
+adjusted_stock_df = adjusted_stock_df[adjusted_stock_df['date'] > '2017-01-01']
+adjusted_stock_df['date'] = pd.to_datetime(adjusted_stock_df['date'], utc=True).dt.strftime("%Y-%m-%d")
+adjusted_stock_df = adjusted_stock_df.sort_values(by='date', ascending=True)
+
+
+# *****  this is wrong!! earnings release does not necessary means report date ****#
+report_date_df = pd.read_sql_table('company_earnings', engine)
+report_date_df = report_date_df[['date', 'ticker','fiscalDateEnding']]
+report_date_df['date'] = pd.to_datetime(report_date_df['date'], utc=True).dt.strftime("%Y-%m-%d")
+report_date_df = report_date_df.sort_values(by='date', ascending=True)
+report_date_df = report_date_df.rename(columns={'fiscalDateEnding':'last_reported_quarter'})
+print("report_date_df read")
+
+bs_df = pd.read_sql_table('company_balance_sheet', engine)
+bs_df = bs_df[['ticker','fiscalDateEnding','commonStockSharesOutstanding']]
+bs_df[bs_df['commonStockSharesOutstanding'] == 'None'] = None
+bs_df = bs_df.rename(columns={'commonStockSharesOutstanding':'last_reported_shares_outstanding','fiscalDateEnding':'last_reported_quarter'})
+print("bs_df read")
+
+
+#get company earnings data
+earnings_df = pd.read_sql_table('company_earnings', engine)
+earnings_df = earnings_df[['date', 'ticker', 'reportedEPS']]
+earnings_df['date'] = pd.to_datetime(earnings_df['date'], utc=True).dt.strftime("%Y-%m-%d")
+earnings_df = earnings_df.sort_values(by='date', ascending=True)
+earnings_df = earnings_df.rename(columns={'reportedEPS':'non_gaap_eps'})
+earnings_df[earnings_df['non_gaap_eps'] == 'None'] = None
+earnings_df['non_gaap_eps'] = earnings_df['non_gaap_eps'].astype(float)
+print("earnings_df read")
+
+meta_data_df = pd.read_sql_table('company_overview', engine)
+meta_data_df = meta_data_df[['ticker','Sector','Industry', 'Exchange','Currency','Name']]
+meta_data_df = meta_data_df.rename(columns={"Sector":"sector", "Industry":"industry","Currency":"currency","Name":"name", "Exchange":"exchange"}) #style thing much make lowe case some column names
+print("meta_data_df read")
+
+
+measures_frames = []
+
 
 for ticker in tickers: ### THIS IS SUCH A BAD WAY TO DO THIS BUT JUST MOVING FORWARD ANYHOW ###
 
-    try:
-        price_df = get_price(ticker) #date, ticker, close_price
-        shares_df = get_shares_outstanding(ticker) #date, ticker, shares_outstanding
-        dividends_df = get_dividends(ticker, shares_df) #date, ticker, dps_ttm, earnings_ttm
-        earnings_df = get_earnings(ticker, shares_df) #date, ticker, non_gaap_eps_ttm, non_gaap_earnings_ttm
-        meta_data_df = get_meta_data(ticker)
+    #try:
+    company_price_df = price_df[price_df['ticker'] == ticker]
+    company_adjusted_price_df = adjusted_price_df[adjusted_price_df['ticker'] == ticker]
+    company_report_date_df = report_date_df[report_date_df['ticker'] == ticker]
+    company_bs_df = bs_df[bs_df['ticker'] == ticker]
+    company_adjusted_stock_df = adjusted_stock_df[adjusted_stock_df['ticker'] == ticker]
+    company_dividend_df = dividend_df[dividend_df['ticker'] == ticker]
+    company_earnings_df = earnings_df[earnings_df['ticker'] == ticker]
+    company_meta_data_df = meta_data_df[meta_data_df['ticker'] == ticker]
 
-        #date, ticket, sector, industry, exchange, currency, country, price, ttm dividends, ttm earnings, shares, marketcap, payout ratio
-        data_frames = [price_df, shares_df, dividends_df, earnings_df]
-        measures = reduce(lambda  left,right: pd.merge(left,right,on=['date','ticker'], how='left'), data_frames)
-        measures = pd.merge(measures, meta_data_df, on='ticker', how='left')
+    company_price_df = pd.merge(company_price_df, company_adjusted_price_df, on=['date','ticker'], how='left')
+    company_shares_df = get_shares_outstanding(company_report_date_df,company_bs_df,company_adjusted_stock_df)
+    company_dividend_df = get_dividends(company_dividend_df, company_shares_df)
+    company_earnings_df = get_earnings(company_earnings_df, company_shares_df)
 
-        #compute additional meaures
-        measures['marketcap'] = measures['close_price'] * measures['shares_outstanding']
-        measures['payout_ratio'] = measures['dps_ttm'] / measures['non_gaap_eps_ttm']
-        measures['dividend_yield'] = measures['dps_ttm'] / measures['close_price']
-        measures['earnings_yield'] = measures['non_gaap_eps_ttm'] / measures['close_price']
+    #date, ticket, sector, industry, exchange, currency, country, price, ttm dividends, ttm earnings, shares, marketcap, payout ratio
+    data_frames = [company_price_df, company_shares_df, company_dividend_df, company_earnings_df]
+    company_measures_df = reduce(lambda  left,right: pd.merge(left,right,on=['date','ticker'], how='left'), data_frames)
+    company_measures_df = pd.merge(company_measures_df, company_meta_data_df, on='ticker', how='left')
 
-        #append
-        company_measures_frames.append(measures)
+    #compute additional meaures
+    company_measures_df['marketcap'] = company_measures_df['close_price'] * company_measures_df['shares_outstanding']
+    company_measures_df['payout_ratio'] = company_measures_df['dps_ttm'] / company_measures_df['non_gaap_eps_ttm']
+    company_measures_df['dividend_yield'] = company_measures_df['dps_ttm'] / company_measures_df['close_price']
+    company_measures_df['earnings_yield'] = company_measures_df['non_gaap_eps_ttm'] / company_measures_df['close_price']
 
-    except:
-        print("skipping need to investigate: ", ticker)
-
+    #append
+    measures_frames.append(company_measures)
+    # print("success processed measure for: ", ticker)
+    #
+    # except:
+    #     print("skipping need to investigate: ", ticker)
 
 #create tables for each company fundamental
 try:
-    company_measures_df = pd.concat(company_measures_frames, axis=0, ignore_index=True)
-    company_measures_df.to_sql('company_measures', engine, if_exists='replace', index=False, chunksize=500)
+    measures_df = pd.concat(measures_frames, axis=0, ignore_index=True)
+    measures_df.to_sql('company_measures', engine, if_exists='replace', index=False, chunksize=500)
     logging.info('SUCCESS: company_measures updated')
     print("SUCCESS: company_measures updated")
 except Exception as e:
