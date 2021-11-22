@@ -57,38 +57,64 @@ def bootstrap(ytms): #this function is setup for yearly calcs
     return zeros #return interpole object
 
 
-# rfr_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
-# rfr_df = rfr_df.set_index('date')
-# rfr_df = rfr_df.apply(lambda x : x / 100) #convert to decimal form
-# rfr_df = rfr_df.apply(lambda x : np.power(1+(x/2),2) - 1) #convert to annual effective
-# rfr_s = rfr_df.apply(lambda x : scipy.interpolate.interp1d([1,2,3,5,7,10,20,30], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
-# rfr_s = rfr_s.apply(lambda x : bootstrap(x))
+#calc risk-free rates (rf_rates)
+rf_rates_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
+rf_rates_df = rf_rates_df.set_index('date')
+rf_rates_df = rf_rates_df.apply(lambda x : x / 100) #convert to decimal form
+rf_rates_df = rf_rates_df.apply(lambda x : np.power(1+(x/2),2) - 1) #convert to annual effective
+rf_rates_s = rf_rates_df.apply(lambda x : scipy.interpolate.interp1d([1,2,3,5,7,10,20,30], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
+rf_rates_s = rf_rates_s.apply(lambda x : bootstrap(x))
+
+#calc real rates (real_rates)
+real_rates_df = pd.read_sql_table('tips_yields', engine) #read in current treasury yields  table
+real_rates_df = real_rates_df.set_index('date')
+real_rates_df = real_rates_df.apply(lambda x : x / 100) #convert to decimal form
+real_rates_df = real_rates_df.apply(lambda x : np.power(1+(x/2),2) - 1) #convert to annual effective
+real_rates_s = real_rates_df.apply(lambda x : scipy.interpolate.interp1d([5,7,10,20,30], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
+real_rates_s = real_rates_s.apply(lambda x : bootstrap(x))
+
+#calc risk preium rates (rp_rates) -- #set flat curve
+rp_rates_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
+rp_rates_df['risk_premium_x'] = .00 #set flat rp curve
+rp_rates_df['risk_premium_y'] = .00 #set flat rp curve
+rp_rates_df = rp_rates_df.set_index('date')
+rp_rates_df = rp_rates_df[['risk_premium_x', 'risk_premium_y']]
+rp_rates_s = rp_rates_df.apply(lambda x : scipy.interpolate.interp1d([5,10], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
+
+rates_df = pd.concat([rf_rates_s,real_rates_s,rp_rates_s], axis=1)
+rates_df.columns =['risk_free_rates','real_rates','risk_premium_rates']
+
+
+#calc market diviends, earnings
+
+#find consittuens
+# # ****** I STILL NEED TO FILTER OUT DUPLICATES *******
+sp500_df = pd.read_sql_table('sp500_constituents', engine)
+sp500_df = sp500_df.loc[sp500_df['date'] >= np.datetime64(cfg["startdate"]) ]#filter for only the dates you want; will delete later
+sp500_df['date'] = pd.to_datetime(sp500_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+sp500_df['tickers'] = sp500_df['tickers'].str.split(',')
+sp500_df = sp500_df.explode('tickers') #break out so each date, ticker is unique
+sp500_df = sp500_df.rename(columns = {'tickers':'ticker'})
+sp500_df['sp500'] = 'x'
+
 #
-# r_df = pd.read_sql_table('tips_yields', engine) #read in current treasury yields  table
-# r_df = r_df.set_index('date')
-# r_df = r_df.apply(lambda x : x / 100) #convert to decimal form
-# r_df = r_df.apply(lambda x : np.power(1+(x/2),2) - 1) #convert to annual effective
-# r_s = r_df.apply(lambda x : scipy.interpolate.interp1d([5,7,10,20,30], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
-# r_s = r_s.apply(lambda x : bootstrap(x))
-#
-# #add risk premium later
-# df = pd.concat([rfr_s,r_s], axis=1)
-# print(df)
+company_df = pd.read_sql_table('company_measures', engine)
+company_df['date'] = pd.to_datetime(company_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+company_df = pd.merge(sp500_df, company_df, on=['date','ticker'], how='inner')
+#company_df.to_csv('company.csv')
 
-#calc earnings
+sp500_price_df = pd.read_sql_table('sp500_prices', engine)
+sp500_price_df['date'] = pd.to_datetime(sp500_price_df['date'] , format="%Y-%m-%d", utc=True) #change format type
 
-c_df = pd.read_sql_table('company_measures', engine)
-c_df['date'] = pd.to_datetime(c_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-c_df = c_df[c_df['date']>'01/01/2018'] #only get dates post 2017
-print(c_df.ticker.unique())
+market_df = company_df.groupby(['date','sp500'])[['marketcap','dividends_ttm','non_gaap_earnings_ttm']].sum()
+market_df = pd.merge(market_df, sp500_price_df, on=['date'], how='inner') #merge in sp500 price
+market_df['divisor'] = market_df['marketcap'] / market_df['sp500_close']
+market_df['dividends_ttm'] = market_df['dividends_ttm'] / market_df['divisor']
+market_df['non_gaap_earnings_ttm'] = market_df['non_gaap_earnings_ttm'] / market_df['divisor']
+market_df['payout_ratio'] = market_df['dividends_ttm'] / market_df['non_gaap_earnings_ttm']
+market_df = market_df.set_index('date')
 
-s_df = pd.read_sql_table('sp500_constituents', engine)
-s_df['date'] = pd.to_datetime(s_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-s_df['tickers'] = s_df['tickers'].str.split(',')
-s_df = s_df.explode('tickers') #break out so each date, ticker is unique
-s_df = s_df.rename(columns = {'tickers':'ticker'})
-#print(s_df)
-
-c_df = pd.merge(s_df, c_df, on=['date','ticker'], how='inner')
-c_df.to_csv('company.csv')
-print(c_df)
+market_df = market_df.join(rates_df, how='left')
+print(market_df)
+# m_df.to_csv('market.csv')
+# print(m_df)
