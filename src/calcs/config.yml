@@ -12,6 +12,8 @@ mysql:
 alphavantage:
   API_KEY: FLS6AFYRTY2HHKHW
   PREMIUM_API_KEY: L7F2EVPKMZ3ZVJFQ
+startdate: 2016-01-01
+calcstartdate: 2019-01-01
 
 ## alpha_vantage_api_key = 'FLS6AFYRTY2HHKHW' -- OLD key
 ## alpha_vantage_api_key = 'L7F2EVPKMZ3ZVJFQ' #Your premium API key for 75 API calls per minute is: L7F2EVPKMZ3ZVJFQ

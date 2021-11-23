@@ -56,6 +56,20 @@ def bootstrap(ytms): #this function is setup for yearly calcs
     zeros = scipy.interpolate.interp1d(years, zeros, bounds_error=False, fill_value="extrapolate")
     return zeros #return interpole object
 
+def calc_growth_rate(market):
+    coefficients = [] #create coefficents list
+    for i in range(1,1000):
+        coefficient = market['dividends_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+        coefficients.append(coefficient)
+
+    coefficients.insert(0,(-1*market['sp500_close'])) #insert negative price at beginning of list
+    coefficients = coefficients[::-1] #reverse order of list
+    roots = np.roots(coefficients) #solve for roots
+    roots = roots[np.isreal(roots)] #find only real roots i.e. no imaginery component
+    growth_rate = roots[roots>0]  #find only real positive roots
+    growth_rate = (growth_rate[0].real - 1) #get growth rate
+    return growth_rate
+
 
 #calc risk-free rates (rf_rates)
 rf_rates_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
@@ -83,7 +97,9 @@ rp_rates_s = rp_rates_df.apply(lambda x : scipy.interpolate.interp1d([5,10], x, 
 
 rates_df = pd.concat([rf_rates_s,real_rates_s,rp_rates_s], axis=1)
 rates_df.columns =['risk_free_rates','real_rates','risk_premium_rates']
-
+rates_df = rates_df.reset_index()
+rates_df['date'] = pd.to_datetime(rates_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+print(rates_df)
 
 #calc market diviends, earnings
 
@@ -108,13 +124,22 @@ sp500_price_df['date'] = pd.to_datetime(sp500_price_df['date'] , format="%Y-%m-%
 
 market_df = company_df.groupby(['date','sp500'])[['marketcap','dividends_ttm','non_gaap_earnings_ttm']].sum()
 market_df = pd.merge(market_df, sp500_price_df, on=['date'], how='inner') #merge in sp500 price
+market_df = market_df.loc[market_df['date'] >= '2020-01-01' ]#filter for only the dates you want; will delete later
+market_df['date'] = pd.to_datetime(market_df['date'] , format="%Y-%m-%d", utc=True) #change format type
 market_df['divisor'] = market_df['marketcap'] / market_df['sp500_close']
 market_df['dividends_ttm'] = market_df['dividends_ttm'] / market_df['divisor']
 market_df['non_gaap_earnings_ttm'] = market_df['non_gaap_earnings_ttm'] / market_df['divisor']
 market_df['payout_ratio'] = market_df['dividends_ttm'] / market_df['non_gaap_earnings_ttm']
-market_df = market_df.set_index('date')
+market_df = market_df.replace(np.nan, 0)
 
-market_df = market_df.join(rates_df, how='left')
+
+
+market_df = pd.merge(market_df, rates_df, on='date', how='left')
+
 print(market_df)
+market_df['growth_rate'] = market_df.apply(lambda x : calc_growth_rate(x), axis=1) #convert to decimal form
+print(market_df.columns)
+print(market_df)
+
 # m_df.to_csv('market.csv')
 # print(m_df)
