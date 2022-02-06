@@ -73,3 +73,8 @@
 long-term plans:
 - i need to be able to compute forward price of sp500 for any day
 - attribution model -> compare forward price and real price and attribut difference
+
+11/25/2021: beginning to list improvements
+- growth curve build out
+- expanding backhistory
+- calcing risk premiums

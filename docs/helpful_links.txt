@@ -20,6 +20,13 @@ Programming Links:
 18. Getting things started on VM: https://cloud.google.com/python/docs/getting-started/getting-started-on-compute-engine
 19. How to create crontab jobs: https://www.adminschoice.com/crontab-quick-reference ; https://youtu.be/v952m13p-b4 ; https://crontab.guru/ ; https://youtu.be/5bTkiV_Aadc
 20. Logging in Python: https://youtu.be/W1vOdzHCa-I ; https://docs.python.org/3/howto/logging.html ;
+21. How to Point your Domain at a Google Cloud Instance: https://youtu.be/y0VgnNbCneU
+22. Hosting Web Applications on Google Cloud Guide: https://medium.com/google-cloud/hosting-web-applications-on-google-cloud-an-overview-46f5605eb3a6
+23. How to Deploy Django to Google Cloud in One Click: https://youtu.be/NcgcN2t19ww
+24. My own personal notes on web app software stacks and architecture: https://www.evernote.com/shard/s445/nl/78146247/9ba60169-c694-4cdc-ae2e-5a34361fb02f?title=Web%20Applications%20and%20Development
+25. Web Development with Python and Django, by Nicholas Wong: https://youtu.be/-80wbZiSPRY
+26. Writing your first Django app: https://docs.djangoproject.com/en/4.0/intro/tutorial01/
+27. Python Django Web Framework - Full Course for Beginners: https://youtu.be/F5mRW0jo-U4
 
 
 

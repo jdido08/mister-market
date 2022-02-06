@@ -57,17 +57,39 @@ def bootstrap(ytms): #this function is setup for yearly calcs
     return zeros #return interpole object
 
 def calc_growth_rate(market):
-    coefficients = [] #create coefficents list
-    for i in range(1,1000):
-        coefficient = market['dividends_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
-        coefficients.append(coefficient)
 
-    coefficients.insert(0,(-1*market['sp500_close'])) #insert negative price at beginning of list
+    long_term_coefficient = 0
+
+    coefficients = [] #create coefficents list
+    for i in range(1,1000): #market does not see further out than 30 years
+
+        if(i < 30):
+            coefficient = market['dividends_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+            coefficients.append(coefficient)
+        elif(i == 30):
+            coefficient = market['dividends_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+            long_term_coefficient = long_term_coefficient + coefficient
+        else:
+            coefficient = (market['dividends_ttm'] *  np.power(1+market['risk_free_rates'](30), i - 30) ) / (np.power(1+market['risk_free_rates'](30),i) * np.power(1+market['risk_premium_rates'](30),i))
+            long_term_coefficient = long_term_coefficient + coefficient
+
+    coefficients.append(long_term_coefficient)
     coefficients = coefficients[::-1] #reverse order of list
-    roots = np.roots(coefficients) #solve for roots
-    roots = roots[np.isreal(roots)] #find only real roots i.e. no imaginery component
-    growth_rate = roots[roots>0]  #find only real positive roots
-    growth_rate = (growth_rate[0].real - 1) #get growth rate
+    #coefficients.insert(0,(-1*market['sp500_close'])) #insert negative price at beginning of list
+    coefficients.append(-1*market['sp500_close'])
+    #coefficients = coefficients[::-1] #reverse order of list
+    #p = np.poly1d(coefficients])
+    #print(coefficients)
+
+    try:
+        roots = np.roots(coefficients) #solve for roots
+        roots = roots[np.isreal(roots)] #find only real roots i.e. no imaginery component
+        growth_rate = roots[roots>0]  #find only real positive roots
+        #growth_rate = (growth_rate[0].real - 1) #get growth
+
+    except:
+        growth_rate = None
+        print("Issue calcing growht rate on: ", market['date'])
     return growth_rate
 
 
@@ -89,8 +111,8 @@ real_rates_s = real_rates_s.apply(lambda x : bootstrap(x))
 
 #calc risk preium rates (rp_rates) -- #set flat curve
 rp_rates_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
-rp_rates_df['risk_premium_x'] = .00 #set flat rp curve
-rp_rates_df['risk_premium_y'] = .00 #set flat rp curve
+rp_rates_df['risk_premium_x'] = .001 #set flat rp curve
+rp_rates_df['risk_premium_y'] = .001 #set flat rp curve
 rp_rates_df = rp_rates_df.set_index('date')
 rp_rates_df = rp_rates_df[['risk_premium_x', 'risk_premium_y']]
 rp_rates_s = rp_rates_df.apply(lambda x : scipy.interpolate.interp1d([5,10], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
@@ -134,12 +156,13 @@ market_df = market_df.replace(np.nan, 0)
 
 
 
-market_df = pd.merge(market_df, rates_df, on='date', how='left')
+market_df = pd.merge(market_df, rates_df, on='date', how='inner')
 
 print(market_df)
 market_df['growth_rate'] = market_df.apply(lambda x : calc_growth_rate(x), axis=1) #convert to decimal form
 print(market_df.columns)
 print(market_df)
+market_df.to_csv('market2.csv')
 
 # m_df.to_csv('market.csv')
 # print(m_df)
