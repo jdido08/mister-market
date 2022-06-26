@@ -1,0 +1,81 @@
+06/22/2022 11:31:26 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:26 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=TIME_SERIES_DAILY&symbol=A&datatype=csv&outputsize=full&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:30 PM - INFO - SUCCESS: A stock data updated
+06/22/2022 11:31:30 PM - INFO - SUCCESS: A adjusted stock data updated
+06/22/2022 11:31:31 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:31 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=EARNINGS&symbol=A&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:33 PM - INFO - SUCCESS: A earnings data updated
+06/22/2022 11:31:34 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:34 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=BALANCE_SHEET&symbol=A&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:36 PM - INFO - SUCCESS: A balance sheet data updated
+06/22/2022 11:31:36 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:37 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=TIME_SERIES_DAILY&symbol=AAL&datatype=csv&outputsize=full&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:40 PM - INFO - SUCCESS: AAL stock data updated
+06/22/2022 11:31:40 PM - INFO - SUCCESS: AAL adjusted stock data updated
+06/22/2022 11:31:41 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:41 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=EARNINGS&symbol=AAL&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:43 PM - INFO - SUCCESS: AAL earnings data updated
+06/22/2022 11:31:43 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:43 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=BALANCE_SHEET&symbol=AAL&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:46 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:46 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=TIME_SERIES_DAILY&symbol=AAP&datatype=csv&outputsize=full&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:46 PM - INFO - SUCCESS: AAP adjusted stock data updated
+06/22/2022 11:31:47 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:47 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=EARNINGS&symbol=AAP&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:49 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:49 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=BALANCE_SHEET&symbol=AAP&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:52 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:52 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=TIME_SERIES_DAILY&symbol=AAPL&datatype=csv&outputsize=full&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:52 PM - INFO - SUCCESS: AAPL adjusted stock data updated
+06/22/2022 11:31:52 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:52 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=EARNINGS&symbol=AAPL&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:54 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:55 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=BALANCE_SHEET&symbol=AAPL&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:57 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:57 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=TIME_SERIES_DAILY&symbol=ABBV&datatype=csv&outputsize=full&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:31:57 PM - INFO - SUCCESS: ABBV adjusted stock data updated
+06/22/2022 11:31:58 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:31:58 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=EARNINGS&symbol=ABBV&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:00 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:00 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=BALANCE_SHEET&symbol=ABBV&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:03 PM - INFO - SUCCESS: ABBV balance sheet data updated
+06/22/2022 11:32:03 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:04 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=TIME_SERIES_DAILY&symbol=ABC&datatype=csv&outputsize=full&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:07 PM - INFO - SUCCESS: ABC stock data updated
+06/22/2022 11:32:08 PM - INFO - SUCCESS: ABC adjusted stock data updated
+06/22/2022 11:32:08 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:08 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=EARNINGS&symbol=ABC&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:10 PM - INFO - SUCCESS: ABC earnings data updated
+06/22/2022 11:32:11 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:11 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=BALANCE_SHEET&symbol=ABC&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:13 PM - INFO - SUCCESS: ABC balance sheet data updated
+06/22/2022 11:32:13 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:14 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=TIME_SERIES_DAILY&symbol=ABMD&datatype=csv&outputsize=full&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:17 PM - INFO - SUCCESS: ABMD stock data updated
+06/22/2022 11:32:17 PM - INFO - SUCCESS: ABMD adjusted stock data updated
+06/22/2022 11:32:18 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:18 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=EARNINGS&symbol=ABMD&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:20 PM - INFO - SUCCESS: ABMD earnings data updated
+06/22/2022 11:32:20 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:21 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=BALANCE_SHEET&symbol=ABMD&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:23 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:23 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=TIME_SERIES_DAILY&symbol=ABT&datatype=csv&outputsize=full&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:23 PM - INFO - SUCCESS: ABT adjusted stock data updated
+06/22/2022 11:32:24 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:24 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=EARNINGS&symbol=ABT&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:26 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:26 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=BALANCE_SHEET&symbol=ABT&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:29 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:29 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=TIME_SERIES_DAILY&symbol=ACN&datatype=csv&outputsize=full&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:29 PM - INFO - SUCCESS: ACN adjusted stock data updated
+06/22/2022 11:32:29 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:30 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=EARNINGS&symbol=ACN&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:32 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:32 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=BALANCE_SHEET&symbol=ACN&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:35 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:35 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=TIME_SERIES_DAILY&symbol=ADBE&datatype=csv&outputsize=full&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:35 PM - INFO - SUCCESS: ADBE adjusted stock data updated
+06/22/2022 11:32:35 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:35 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=EARNINGS&symbol=ADBE&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None
+06/22/2022 11:32:38 PM - DEBUG - Starting new HTTPS connection (1): www.alphavantage.co:443
+06/22/2022 11:32:38 PM - DEBUG - https://www.alphavantage.co:443 "GET /query?function=BALANCE_SHEET&symbol=ADBE&datatype=json&apikey=WAOIBYBGYY9YUHUC HTTP/1.1" 200 None

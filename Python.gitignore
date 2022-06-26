@@ -143,3 +143,4 @@ cython_debug/
 ssl/
 config.yml
 data/
+.csv

@@ -12,6 +12,7 @@ mysql:
 alphavantage:
   API_KEY: FLS6AFYRTY2HHKHW
   PREMIUM_API_KEY: L7F2EVPKMZ3ZVJFQ
+  SPECIAL_KEY: WAOIBYBGYY9YUHUC
 startdate: 2019-01-01
 
 ## alpha_vantage_api_key = 'FLS6AFYRTY2HHKHW' -- OLD key
