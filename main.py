@@ -35,17 +35,17 @@ def get_sp500_constituents_today():
 def test_db_writing():
     ### SCRIPT ####
     ### THIS SCRIPT IS MEANT TO RUN ONCE A DAY ###
-    logging.basicConfig(filename= os.path.dirname(os.path.abspath(__file__)) + '/ingest_logs.log',
-        level=logging.DEBUG,
-        filemode='w',
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        datefmt='%m/%d/%Y %I:%M:%S %p')
-
-
-    config_file_path = os.path.dirname(os.path.abspath(__file__)) + "/config.yml"
-
-    with open(config_file_path, "r") as ymlfile:
-        cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+    # logging.basicConfig(filename= os.path.dirname(os.path.abspath(__file__)) + '/ingest_logs.log',
+    #     level=logging.DEBUG,
+    #     filemode='w',
+    #     format='%(asctime)s - %(levelname)s - %(message)s',
+    #     datefmt='%m/%d/%Y %I:%M:%S %p')
+    #
+    #
+    # config_file_path = os.path.dirname(os.path.abspath(__file__)) + "/config.yml"
+    #
+    # with open(config_file_path, "r") as ymlfile:
+    #     cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
     # db_user = cfg["mysql"]["DB_USER"]
     # db_pass = cfg["mysql"]["DB_PASS"]
@@ -62,9 +62,9 @@ def test_db_writing():
     # db_ssl_cert = cfg["mysql"]["CLIENT-CERT.PEM"]
     # db_ssl_key = cfg["mysql"]["CLIENT-KEY.PEM"]
 
-    db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'
-    db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem'
-    db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'
+    # db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'
+    # db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem'
+    # db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'
 
     #for local dev -- set google app credentials
     # google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-6e485429eb5e.json"
@@ -118,10 +118,10 @@ def test_db_writing():
     try:
         #print(sp500_constituents_df)
         sp500_constituents_df.to_sql('sp500_constituents', engine, if_exists='replace', index=False, chunksize=500)
-        logging.info('SUCCESS: sp500_constituents updated')
+        #logging.info('SUCCESS: sp500_constituents updated')
         print("SUCCESS: sp500_constituents updated")
     except Exception as e:
-        logging.error("Can't update sp500_constituents -- Error: ", e)
+        #logging.error("Can't update sp500_constituents -- Error: ", e)
         print("Can't update sp500_constituents -- Error: ", e)
 
 
