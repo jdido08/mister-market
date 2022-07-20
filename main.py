@@ -32,7 +32,7 @@ def get_sp500_constituents_today():
 
     return df
 
-def test_db_writing():
+def test_db_writing(request):
     ### SCRIPT ####
     ### THIS SCRIPT IS MEANT TO RUN ONCE A DAY ###
     # logging.basicConfig(filename= os.path.dirname(os.path.abspath(__file__)) + '/ingest_logs.log',
