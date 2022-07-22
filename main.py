@@ -58,6 +58,7 @@ def test_db_writing(request):
     # db_hostname = cfg["mysql"]["DB_HOSTNAME"]
     # db_port = cfg["mysql"]["DB_PORT"]
     # db_name = cfg["mysql"]["RAW_DATA_DB_NAME"]
+    connection_name = "mister-market-project:us-central1:mister-market-db"
     db_user = "root"
     db_pass = "B4Nqi68k19megKGd"
     db_hostname = "34.133.165.86"
