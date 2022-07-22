@@ -59,7 +59,7 @@ def test_db_writing(request):
     # db_name = cfg["mysql"]["RAW_DATA_DB_NAME"]
     connection_name = "mister-market-project:us-central1:mister-market-db"
     db_user = "root"
-    db_pass = "B4Nqi68k19megKGd"
+    db_password = "B4Nqi68k19megKGd"
     db_hostname = "34.133.165.86"
     db_port = "3306"
     db_name = "raw_data"
@@ -160,9 +160,9 @@ def test_db_writing(request):
 
 
 
-
-
-
+# 
+# request = ""
+# test_db_writing(request)
 
 
 
