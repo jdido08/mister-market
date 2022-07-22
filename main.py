@@ -47,6 +47,12 @@ def test_db_writing(request):
     # with open(config_file_path, "r") as ymlfile:
     #     cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
+    # If your database is MySQL, uncomment the following two lines:
+    driver_name = 'mysql+pymysql'
+    query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
+
+
+
     # db_user = cfg["mysql"]["DB_USER"]
     # db_pass = cfg["mysql"]["DB_PASS"]
     # db_hostname = cfg["mysql"]["DB_HOSTNAME"]
@@ -71,24 +77,39 @@ def test_db_writing(request):
     # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
 
     #https://towardsdatascience.com/sql-on-the-cloud-with-python-c08a30807661
+    # engine = sqlalchemy.create_engine(
+    #      sqlalchemy.engine.url.URL.create(
+    #         drivername="mysql+pymysql",
+    #         username=db_user,  # e.g. "my-database-user"
+    #         password=db_pass,  # e.g. "my-database-password"
+    #         host=db_hostname,  # e.g. "127.0.0.1"
+    #         port=db_port,  # e.g. 3306
+    #         database=db_name,  # e.g. "my-database-name"
+    #     ),
+    #     # connect_args = {
+    #     #     # 'ssl_ca': db_ssl_ca,
+    #     #     # 'ssl_cert': db_ssl_cert,
+    #     #     # 'ssl_key': db_ssl_key
+    #     #     'ssl_ca': db_ssl_ca_path ,
+    #     #     'ssl_cert': db_ssl_cert_path,
+    #     #     'ssl_key': db_ssl_key_path
+    #     # }
+    # )
+
     engine = sqlalchemy.create_engine(
-         sqlalchemy.engine.url.URL.create(
-            drivername="mysql+pymysql",
-            username=db_user,  # e.g. "my-database-user"
-            password=db_pass,  # e.g. "my-database-password"
-            host=db_hostname,  # e.g. "127.0.0.1"
-            port=db_port,  # e.g. 3306
-            database=db_name,  # e.g. "my-database-name"
-        ),
-        # connect_args = {
-        #     # 'ssl_ca': db_ssl_ca,
-        #     # 'ssl_cert': db_ssl_cert,
-        #     # 'ssl_key': db_ssl_key
-        #     'ssl_ca': db_ssl_ca_path ,
-        #     'ssl_cert': db_ssl_cert_path,
-        #     'ssl_key': db_ssl_key_path
-        # }
+      sqlalchemy.engine.url.URL(
+        drivername=driver_name,
+        username=db_user,
+        password=db_password,
+        database=db_name,
+        query=query_string,
+      ),
+      pool_size=5,
+      max_overflow=2,
+      pool_timeout=30,
+      pool_recycle=1800
     )
+
 
 
 
@@ -114,6 +135,13 @@ def test_db_writing(request):
     sp500_constituents_df = sp500_constituents_df.sort_values(by='date') #order by dates
     sp500_constituents_df = sp500_constituents_df.drop_duplicates(subset=['date']) #drop any duplicates dates'; this unccessary now
     sp500_constituents_df = sp500_constituents_df.fillna(method='ffill') #fill forward for any misisng dataframes
+
+
+    # try:
+    #     with db.connect() as conn:
+    #         conn.execute(stmt)
+    # except Exception as e:
+    #     return 'Error: {}'.format(str(e))
 
     try:
         #print(sp500_constituents_df)
