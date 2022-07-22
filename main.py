@@ -47,9 +47,8 @@ def test_db_writing(request):
     # with open(config_file_path, "r") as ymlfile:
     #     cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
-    # If your database is MySQL, uncomment the following two lines:
-    driver_name = 'mysql+pymysql'
-    query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
+
+
 
 
 
@@ -64,6 +63,10 @@ def test_db_writing(request):
     db_hostname = "34.133.165.86"
     db_port = "3306"
     db_name = "raw_data"
+
+    # If your database is MySQL, uncomment the following two lines:
+    driver_name = 'mysql+pymysql'
+    query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
 
     # db_ssl_ca = cfg["mysql"]["SERVER-CA.PEM"]
     # db_ssl_cert = cfg["mysql"]["CLIENT-CERT.PEM"]
