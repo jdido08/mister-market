@@ -244,7 +244,7 @@ def update_sp500_prices():
 
      read_write_df_sql(function = "write", df = df, table_name = "sp500_prices", if_exists = "replace")
 
-     print(df)
+
 
 
 ################################################################################
@@ -335,7 +335,7 @@ def reset_company_status():
 
 
     #FOR TESTING only
-    df = df.head(5)
+    #df = df.head(5)
 
     #create table that will keep track of daily updates for companies
     read_write_df_sql(function = "write", df = df, table_name = "company_data_status", if_exists = "replace")
