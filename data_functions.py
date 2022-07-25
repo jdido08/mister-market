@@ -21,15 +21,13 @@ def get_secret(project_id, secret_id, version_id):
     """
 
     #for local dev -- set google app credentials
-    google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-6e485429eb5e.json"
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
+    # google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-6e485429eb5e.json"
+    # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
 
     #link: https://cloud.google.com/secret-manager/docs/creating-and-accessing-secrets
     #follow instruction here to run locally: https://cloud.google.com/docs/authentication/production#create-service-account-gcloud
 
-    # project_id = "mister-market-project"
-    # secret_id = "alphavantage_special_key"
-    # version_id = "1"
+
 
     # Create the Secret Manager client.
     client = secretmanager.SecretManagerServiceClient()
@@ -55,13 +53,13 @@ connection_name = "mister-market-project:us-central1:mister-market-db"
 driver_name = 'mysql+pymysql'
 query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
 db_user = "root"
-db_port = "3306"                                                            #for local dev
 db_name = "raw_data"
 db_password = get_secret("mister-market-project", "db_password", "1")
-db_hostname = get_secret("mister-market-project", "db_hostname", "1")      #for local dev
-db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
-db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
-db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
+# db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
+# db_port = "3306"                                                                       #for local dev
+# db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
+# db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
+# db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
 
 engine = db.create_engine(
   db.engine.url.URL.create(
@@ -69,22 +67,21 @@ engine = db.create_engine(
     username=db_user,
     password=db_password,
     database=db_name,
-    # query=query_string,                  #for cloud function
-    host=db_hostname,  # e.g. "127.0.0.1" #for local dev
-    port=db_port,  # e.g. 3306            #for local dev
+    query=query_string,                  #for cloud function
+    # host=db_hostname,  # e.g. "127.0.0.1" #for local dev
+    # port=db_port,  # e.g. 3306            #for local dev
   ),
   pool_size=5,
   max_overflow=2,
   pool_timeout=30,
   pool_recycle=1800
-  ,                                   #for local dev
-  connect_args = {                    #for local dev
-      'ssl_ca': db_ssl_ca_path ,      #for local dev
-      'ssl_cert': db_ssl_cert_path,   #for local dev
-      'ssl_key': db_ssl_key_path      #for local dev
-      }                               #for loval dev
+  # ,                                   #for local dev
+  # connect_args = {                    #for local dev
+  #     'ssl_ca': db_ssl_ca_path ,      #for local dev
+  #     'ssl_cert': db_ssl_cert_path,   #for local dev
+  #     'ssl_key': db_ssl_key_path      #for local dev
+  #     }                               #for loval dev
 )
-
 
 connection = engine.connect()
 metadata = db.MetaData()
@@ -173,7 +170,7 @@ def get_av_quarterly_cash_flow_statements(ticker, alpha_vantage_api_key):
 #this function is only meant to be run locally
 def reset_sp500_constituents_history():
     start_date = datetime.datetime(1996, 1, 2).strftime("%Y-%m-%d") #start date from https://github.com/fja05680/sp500
-    end_date = datetime.datetime(2021, 10, 27).strftime("%Y-%m-%d") #this potentially needs to be updated if the underlying csv updates
+    end_date = datetime.datetime(2022, 7, 23).strftime("%Y-%m-%d") #this potentially needs to be updated if the underlying csv updates
     date_df = pd.date_range(start=start_date, end=end_date).to_frame(index=False, name='date')
     date_df['date'] = pd.to_datetime(date_df['date'], utc=True) #formatting
 
@@ -235,7 +232,7 @@ def update_sp500_constituents():
     read_write_df_sql(function = "write", df = sp500_constituents_df, table_name = "sp500_constituents", if_exists = "replace")
 
 def update_sp500_prices():
-     sp500_fred_start_date = datetime.datetime(2010, 9, 13).strftime("%Y-%m-%d") #FRED provides last 10 years of data; will need to loop back at this at some point
+     sp500_fred_start_date = datetime.datetime(2013, 1, 1).strftime("%Y-%m-%d") #FRED provides last 10 years of data; will need to loop back at this at some point
      today = datetime.date.today().strftime("%Y-%m-%d") #get most up to date data on FRED website
      df= web.DataReader(['SP500'], 'fred', sp500_fred_start_date, today)
 
