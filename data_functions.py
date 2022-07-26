@@ -8,6 +8,7 @@ import pandas_datareader as web # to get fred data
 import requests
 import time
 import io
+import json
 
 
 ################################################################################
@@ -55,11 +56,11 @@ query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
 db_user = "root"
 db_name = "raw_data"
 db_password = get_secret("mister-market-project", "db_password", "1")
-# db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
-# db_port = "3306"                                                                       #for local dev
-# db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
-# db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
-# db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
+db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
+db_port = "3306"                                                                       #for local dev
+db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
+db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
+db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
 
 engine = db.create_engine(
   db.engine.url.URL.create(
@@ -335,7 +336,7 @@ def reset_company_status():
 
 
     #FOR TESTING only
-    #df = df.head(5)
+    df = df.head(5)
 
     #create table that will keep track of daily updates for companies
     read_write_df_sql(function = "write", df = df, table_name = "company_data_status", if_exists = "replace")
@@ -382,6 +383,12 @@ def update_company_data():
         #update update_status for that specific ticker at hand
         update_status_query = db.update(company_data_status).values(update_status = "COMPLETE").where(company_data_status.columns.ticker == ticker)
         connection.execute(update_status_query)
+
+        # google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-353264e22939.json"
+        # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
+        response = requests.get('https://us-central1-mister-market-project.cloudfunctions.net/update_company_data_cloud_function')
+        print(response)
+        #print(json.dumps(response.json(),indent=2))
 
     else:
         print("NOTHING ELSE TO UPDATE!")
