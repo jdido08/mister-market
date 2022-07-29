@@ -386,7 +386,7 @@ def update_company_data():
 
         # google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-353264e22939.json"
         # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
-        response = requests.get('https://us-central1-mister-market-project.cloudfunctions.net/update_company_data_cloud_function')
+        response = requests.get('https://us-central1-mister-market-project.cloudfunctions.net/update_company_data_cloud_function', verify=True)
         print(response)
         #print(json.dumps(response.json(),indent=2))
 
