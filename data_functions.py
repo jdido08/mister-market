@@ -384,10 +384,11 @@ def update_company_data():
         update_status_query = db.update(company_data_status).values(update_status = "COMPLETE").where(company_data_status.columns.ticker == ticker)
         connection.execute(update_status_query)
 
+        #### MOVING ON FROM THIS NOW - MAYBE WILL TRY AGAIN IN THE FUTURE ####
         # google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-353264e22939.json"
         # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
-        response = requests.get('https://us-central1-mister-market-project.cloudfunctions.net/update_company_data_cloud_function', verify=True)
-        print(response)
+        #response = requests.post('https://us-central1-mister-market-project.cloudfunctions.net/update_company_data_cloud_function')
+        #print(response)
         #print(json.dumps(response.json(),indent=2))
 
     else:
