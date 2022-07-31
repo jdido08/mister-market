@@ -9,6 +9,10 @@ import requests
 import time
 import io
 import json
+from calc_functions import calc_company_measures
+
+
+### FUNCTIONS THAT SUPPORTING GRABBING RAW DATA FROM THE WORLD ###
 
 
 ################################################################################
@@ -308,6 +312,8 @@ def reset_company_status():
 
     #for today our universe of companies is the sp500
     df = read_write_df_sql(function = "read", table_name = "sp500_constituents") #read in current sp500_constituents table
+
+    #FOR TESTING
     df = df.loc[df['date'] >= '2021-01-01'] #filter for only the dates you want; will delete later
 
     #get unique tickers
@@ -356,43 +362,6 @@ def reset_company_status():
     #replace existing company earnings tables w/ empty table
     company_balance_sheet_df = pd.DataFrame(columns = ['fiscalDateEnding','reportedCurrency','totalAssets','totalLiabilities','totalShareholderEquity','commonStock','commonStockSharesOutstanding','cash','ticker'])
     read_write_df_sql(function = "write", df = company_balance_sheet_df, table_name = "company_balance_sheet", if_exists = "replace")
-
-def update_company_data():
-    #https://towardsdatascience.com/sql-on-the-cloud-with-python-c08a30807661
-
-
-    #connect to company_data_status table
-    company_data_status = db.Table('company_data_status', metadata, autoload=True, autoload_with=engine)
-
-    #query for first ticker that's not started
-    find_ticker_query = db.select([company_data_status]).where(company_data_status.columns.update_status == "NOT STARTED")
-    result = connection.execute(find_ticker_query).first()
-
-    if(result):
-        ticker = result['ticker']
-
-        #update update_status for that specific ticker at hand
-        update_status_query = db.update(company_data_status).values(update_status = "IN PROGRESS").where(company_data_status.columns.ticker == ticker)
-        connection.execute(update_status_query)
-
-        update_company_stock_data(ticker)
-        update_company_adjusted_stock_data(ticker)
-        update_company_earnings_data(ticker)
-        update_company_balance_sheet_data(ticker)
-
-        #update update_status for that specific ticker at hand
-        update_status_query = db.update(company_data_status).values(update_status = "COMPLETE").where(company_data_status.columns.ticker == ticker)
-        connection.execute(update_status_query)
-
-        #### MOVING ON FROM THIS NOW - MAYBE WILL TRY AGAIN IN THE FUTURE ####
-        # google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-353264e22939.json"
-        # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
-        #response = requests.post('https://us-central1-mister-market-project.cloudfunctions.net/update_company_data_cloud_function')
-        #print(response)
-        #print(json.dumps(response.json(),indent=2))
-
-    else:
-        print("NOTHING ELSE TO UPDATE!")
 
 
 def update_company_stock_data(ticker):
@@ -511,3 +480,41 @@ def update_company_balance_sheet_data(ticker):
     update_date_query = db.update(company_data_status).values(last_balance_sheet_update_date = now).where(company_data_status.columns.ticker == ticker)
     connection.execute(update_date_query)
     time.sleep(15)
+
+
+def update_company_data():
+    #https://towardsdatascience.com/sql-on-the-cloud-with-python-c08a30807661
+
+
+    #connect to company_data_status table
+    company_data_status = db.Table('company_data_status', metadata, autoload=True, autoload_with=engine)
+
+    #query for first ticker that's not started
+    find_ticker_query = db.select([company_data_status]).where(company_data_status.columns.update_status == "NOT STARTED")
+    result = connection.execute(find_ticker_query).first()
+
+    if(result):
+        ticker = result['ticker']
+
+        #update update_status for that specific ticker at hand
+        update_status_query = db.update(company_data_status).values(update_status = "IN PROGRESS").where(company_data_status.columns.ticker == ticker)
+        connection.execute(update_status_query)
+
+        update_company_stock_data(ticker)
+        update_company_adjusted_stock_data(ticker)
+        update_company_earnings_data(ticker)
+        update_company_balance_sheet_data(ticker)
+
+        #update update_status for that specific ticker at hand
+        update_status_query = db.update(company_data_status).values(update_status = "COMPLETE").where(company_data_status.columns.ticker == ticker)
+        connection.execute(update_status_query)
+
+        #### MOVING ON FROM THIS NOW - MAYBE WILL TRY AGAIN IN THE FUTURE ####
+        # google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-353264e22939.json"
+        # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
+        #response = requests.post('https://us-central1-mister-market-project.cloudfunctions.net/update_company_data_cloud_function')
+        #print(response)
+        #print(json.dumps(response.json(),indent=2))
+
+    else:
+        print("NOTHING ELSE TO UPDATE!")
