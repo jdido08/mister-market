@@ -60,11 +60,11 @@ query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
 db_user = "root"
 db_name = "raw_data"
 db_password = get_secret("mister-market-project", "db_password", "1")
-db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
-db_port = "3306"                                                                       #for local dev
-db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
-db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
-db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
+# db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
+# db_port = "3306"                                                                       #for local dev
+# db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
+# db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
+# db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
 
 engine = db.create_engine(
   db.engine.url.URL.create(
@@ -340,6 +340,9 @@ def reset_company_status():
     df["balance_sheet_update_status"] = "NOT STARTED"
     df["last_balance_sheet_update_date"] = "N/A"
 
+    df["calc_company_measures_status"] = "NOT STARTED"
+    df["calc_company_measures_update_date"] = "#N/A"
+
 
     #FOR TESTING only
     #df = df.head(5)
@@ -362,6 +365,10 @@ def reset_company_status():
     #replace existing company earnings tables w/ empty table
     company_balance_sheet_df = pd.DataFrame(columns = ['fiscalDateEnding','reportedCurrency','totalAssets','totalLiabilities','totalShareholderEquity','commonStock','commonStockSharesOutstanding','cash','ticker'])
     read_write_df_sql(function = "write", df = company_balance_sheet_df, table_name = "company_balance_sheet", if_exists = "replace")
+
+    #replace existing company earnings tables w/ empty table
+    company_measures_df = pd.DataFrame(columns = ['ticker','date','close_price','adjusted_close_price','shares_outstanding','dps_ttm','dividends_ttm', 'non_gaap_eps_ttm','non_gaap_earnings_ttm','sector','industry','exchange','currency','name','marketcap','payout_ratio','dividend_yield','earnings_yield'])
+    read_write_df_sql(function = "write", df = company_measures_df, table_name = "company_measures", if_exists = "replace")
 
 
 def update_company_stock_data(ticker):
@@ -500,10 +507,14 @@ def update_company_data():
         update_status_query = db.update(company_data_status).values(update_status = "IN PROGRESS").where(company_data_status.columns.ticker == ticker)
         connection.execute(update_status_query)
 
+        #get company data
         update_company_stock_data(ticker)
         update_company_adjusted_stock_data(ticker)
         update_company_earnings_data(ticker)
         update_company_balance_sheet_data(ticker)
+
+        #calc company measures
+        calc_company_measures(ticker)
 
         #update update_status for that specific ticker at hand
         update_status_query = db.update(company_data_status).values(update_status = "COMPLETE").where(company_data_status.columns.ticker == ticker)

@@ -4,6 +4,7 @@ from google.cloud import secretmanager # Import the Secret Manager client librar
 import google_crc32c
 import os #to get file path
 from functools import reduce
+import datetime
 
 ################################################################################
 ######################## SUPPORTING INFRASTRUCTURE #############################
@@ -16,8 +17,8 @@ def get_secret(project_id, secret_id, version_id):
     """
 
     #for local dev -- set google app credentials
-    google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-6e485429eb5e.json"
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
+    # google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-6e485429eb5e.json"
+    # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
 
     #link: https://cloud.google.com/secret-manager/docs/creating-and-accessing-secrets
     #follow instruction here to run locally: https://cloud.google.com/docs/authentication/production#create-service-account-gcloud
@@ -50,11 +51,11 @@ query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
 db_user = "root"
 db_name = "raw_data"
 db_password = get_secret("mister-market-project", "db_password", "1")
-db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
-db_port = "3306"                                                                       #for local dev
-db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
-db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
-db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
+# db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
+# db_port = "3306"                                                                       #for local dev
+# db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
+# db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
+# db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
 
 engine = db.create_engine(
   db.engine.url.URL.create(
@@ -62,20 +63,20 @@ engine = db.create_engine(
     username=db_user,
     password=db_password,
     database=db_name,
-    #query=query_string,                  #for cloud function
-    host=db_hostname,  # e.g. "127.0.0.1" #for local dev
-    port=db_port,  # e.g. 3306            #for local dev
+    query=query_string,                  #for cloud function
+    # host=db_hostname,  # e.g. "127.0.0.1" #for local dev
+    # port=db_port,  # e.g. 3306            #for local dev
   ),
   pool_size=5,
   max_overflow=2,
   pool_timeout=30,
   pool_recycle=1800
-  ,                                   #for local dev
-  connect_args = {                    #for local dev
-      'ssl_ca': db_ssl_ca_path ,      #for local dev
-      'ssl_cert': db_ssl_cert_path,   #for local dev
-      'ssl_key': db_ssl_key_path      #for local dev
-      }                               #for loval dev
+  # ,                                   #for local dev
+  # connect_args = {                    #for local dev
+  #     'ssl_ca': db_ssl_ca_path ,      #for local dev
+  #     'ssl_cert': db_ssl_cert_path,   #for local dev
+  #     'ssl_key': db_ssl_key_path      #for local dev
+  #     }                               #for loval dev
 )
 
 connection = engine.connect()
@@ -252,26 +253,44 @@ def get_meta_data(ticker):
 
 #dont do this by ticker
 def calc_company_measures(ticker):
-    price_df = get_price(ticker) #date, ticker, close_price
-    shares_df = get_shares_outstanding(ticker) #date, ticker, shares_outstanding
-    dividends_df = get_dividends(ticker, shares_df) #date, ticker, dps_ttm, earnings_ttm
-    earnings_df = get_earnings(ticker, shares_df) #date, ticker, non_gaap_eps_ttm, non_gaap_earnings_ttm
-    meta_data_df = get_meta_data(ticker)
 
-    #date, ticket, sector, industry, exchange, currency, country, price, ttm dividends, ttm earnings, shares, marketcap, payout ratio
-    data_frames = [price_df, shares_df, dividends_df, earnings_df]
-    measures_df = reduce(lambda  left,right: pd.merge(left,right,on=['date','ticker'], how='left'), data_frames)
-    measures_df = pd.merge(measures_df, meta_data_df, on='ticker', how='left')
+    #connect to company_data_status table
+    company_data_status = db.Table('company_data_status', metadata, autoload=True, autoload_with=engine)
 
-    #compute additional meaures
-    measures_df['marketcap'] = measures_df['close_price'] * measures_df['shares_outstanding']
-    measures_df['payout_ratio'] = measures_df['dps_ttm'] / measures_df['non_gaap_eps_ttm']
-    measures_df['dividend_yield'] = measures_df['dps_ttm'] / measures_df['close_price']
-    measures_df['earnings_yield'] = measures_df['non_gaap_eps_ttm'] / measures_df['close_price']
+    try:
+        price_df = get_price(ticker) #date, ticker, close_price
+        shares_df = get_shares_outstanding(ticker) #date, ticker, shares_outstanding
+        dividends_df = get_dividends(ticker, shares_df) #date, ticker, dps_ttm, earnings_ttm
+        earnings_df = get_earnings(ticker, shares_df) #date, ticker, non_gaap_eps_ttm, non_gaap_earnings_ttm
+        meta_data_df = get_meta_data(ticker)
 
-    #for ticker get company data and append it to company_stock table
-    measures_df.to_sql('company_measures', engine, if_exists='append', index=False, chunksize=500)
+        #date, ticket, sector, industry, exchange, currency, country, price, ttm dividends, ttm earnings, shares, marketcap, payout ratio
+        data_frames = [price_df, shares_df, dividends_df, earnings_df]
+        measures_df = reduce(lambda  left,right: pd.merge(left,right,on=['date','ticker'], how='left'), data_frames)
+        measures_df = pd.merge(measures_df, meta_data_df, on='ticker', how='left')
 
+        #compute additional meaures
+        measures_df['marketcap'] = measures_df['close_price'] * measures_df['shares_outstanding']
+        measures_df['payout_ratio'] = measures_df['dps_ttm'] / measures_df['non_gaap_eps_ttm']
+        measures_df['dividend_yield'] = measures_df['dps_ttm'] / measures_df['close_price']
+        measures_df['earnings_yield'] = measures_df['non_gaap_eps_ttm'] / measures_df['close_price']
 
+        #for ticker get company data and append it to company_stock table
+        measures_df.to_sql('company_measures', engine, if_exists='append', index=False, chunksize=500)
 
-def reset_company_measures()
+        #set status of query
+        update_status_query = db.update(company_data_status).values(calc_company_measures_status = "COMPLETE").where(company_data_status.columns.ticker == ticker)
+        #logging.info('SUCCESS: %s stock data updated', ticker)
+        print('SUCCESS: ', ticker, ' calc company measures updated!')
+
+    except Exception as e:
+        #set status of query
+        update_status_query = db.update(company_data_status).values(calc_company_measures_status = "ERROR").where(company_data_status.columns.ticker == ticker)
+        #logging.error('ERROR: Cant update company stock data -- Error: ', e)
+        print('ERROR: Cant update ', ticker, ' calc company measures! DETAILS: ', e)
+
+    #update status
+    connection.execute(update_status_query)
+    now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    update_date_query = db.update(company_data_status).values(calc_company_measures_update_date = now).where(company_data_status.columns.ticker == ticker)
+    connection.execute(update_date_query)
