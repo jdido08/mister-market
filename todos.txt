@@ -1,0 +1,3 @@
+
+in reset_company_status -- when saving to sql set column dtypes
+double check company stock table columns

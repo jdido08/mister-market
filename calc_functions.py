@@ -5,6 +5,8 @@ import google_crc32c
 import os #to get file path
 from functools import reduce
 import datetime
+import numpy as np
+import scipy.interpolate #for interpolate function
 
 ################################################################################
 ######################## SUPPORTING INFRASTRUCTURE #############################
@@ -17,8 +19,8 @@ def get_secret(project_id, secret_id, version_id):
     """
 
     #for local dev -- set google app credentials
-    # google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-6e485429eb5e.json"
-    # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
+    google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-6e485429eb5e.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
 
     #link: https://cloud.google.com/secret-manager/docs/creating-and-accessing-secrets
     #follow instruction here to run locally: https://cloud.google.com/docs/authentication/production#create-service-account-gcloud
@@ -51,11 +53,11 @@ query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
 db_user = "root"
 db_name = "raw_data"
 db_password = get_secret("mister-market-project", "db_password", "1")
-# db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
-# db_port = "3306"                                                                       #for local dev
-# db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
-# db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
-# db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
+db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
+db_port = "3306"                                                                       #for local dev
+db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
+db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
+db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
 
 engine = db.create_engine(
   db.engine.url.URL.create(
@@ -63,24 +65,29 @@ engine = db.create_engine(
     username=db_user,
     password=db_password,
     database=db_name,
-    query=query_string,                  #for cloud function
-    # host=db_hostname,  # e.g. "127.0.0.1" #for local dev
-    # port=db_port,  # e.g. 3306            #for local dev
+    #query=query_string,                  #for cloud function
+    host=db_hostname,  # e.g. "127.0.0.1" #for local dev
+    port=db_port,  # e.g. 3306            #for local dev
   ),
   pool_size=5,
   max_overflow=2,
   pool_timeout=30,
   pool_recycle=1800
-  # ,                                   #for local dev
-  # connect_args = {                    #for local dev
-  #     'ssl_ca': db_ssl_ca_path ,      #for local dev
-  #     'ssl_cert': db_ssl_cert_path,   #for local dev
-  #     'ssl_key': db_ssl_key_path      #for local dev
-  #     }                               #for loval dev
+  ,                                   #for local dev
+  connect_args = {                    #for local dev
+      'ssl_ca': db_ssl_ca_path ,      #for local dev
+      'ssl_cert': db_ssl_cert_path,   #for local dev
+      'ssl_key': db_ssl_key_path      #for local dev
+      }                               #for loval dev
 )
 
 connection = engine.connect()
 metadata = db.MetaData()
+
+
+################################################################################
+######################## COMPANY CALC FUNCTIONS ################################
+################################################################################
 
 def get_price(ticker):
     #get raw price
@@ -277,6 +284,7 @@ def calc_company_measures(ticker):
 
         #for ticker get company data and append it to company_stock table
         measures_df.to_sql('company_measures', engine, if_exists='append', index=False, chunksize=500)
+        #print(measures_df.dtypes)
 
         #set status of query
         update_status_query = db.update(company_data_status).values(calc_company_measures_status = "COMPLETE").where(company_data_status.columns.ticker == ticker)
@@ -294,3 +302,167 @@ def calc_company_measures(ticker):
     now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     update_date_query = db.update(company_data_status).values(calc_company_measures_update_date = now).where(company_data_status.columns.ticker == ticker)
     connection.execute(update_date_query)
+
+
+
+################################################################################
+######################## MARKET CALC FUNCTIONS #################################
+################################################################################
+
+
+def bootstrap(ytms): #this function is setup for yearly calcs
+    zeros = [] #create empty zeros list
+    zeros.append(ytms(1))
+    for i in range(1, 30): #30 is the end year for now
+        discounted_cfs = []
+        face = 100
+        coupon = (ytms(i+1))*face #coupon rate is equal to ytm because bond priced at par
+        for j in range(1, i):
+            dcf = coupon/np.power(1+zeros[j],j+1)
+            discounted_cfs.append(dcf) #this is redundant to recalc previous DCFs each time but going to keep it for now
+        z = np.power((face+coupon) / (face - sum(discounted_cfs)),1/(i+1)) - 1
+        zeros.append(z)
+    years = list(range(1,30 + 1))
+    zeros = scipy.interpolate.interp1d(years, zeros, bounds_error=False, fill_value="extrapolate")
+    return zeros #return interpole object
+
+def calc_growth_rate(market):
+
+    long_term_coefficient = 0
+
+    coefficients = [] #create coefficents list
+    for i in range(1,1000): #market does not see further out than 30 years
+
+        if(i < 30):
+            coefficient = market['dividends_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+            coefficients.append(coefficient)
+        elif(i == 30):
+            coefficient = market['dividends_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+            long_term_coefficient = long_term_coefficient + coefficient
+        else:
+            coefficient = (market['dividends_ttm'] *  np.power(1+market['risk_free_rates'](30), i - 30) ) / (np.power(1+market['risk_free_rates'](30),i) * np.power(1+market['risk_premium_rates'](30),i))
+            long_term_coefficient = long_term_coefficient + coefficient
+
+    coefficients.append(long_term_coefficient)
+    coefficients = coefficients[::-1] #reverse order of list
+    #coefficients.insert(0,(-1*market['sp500_close'])) #insert negative price at beginning of list
+    coefficients.append(-1*market['sp500_close'])
+    #coefficients = coefficients[::-1] #reverse order of list
+    #p = np.poly1d(coefficients])
+    #print(coefficients)
+
+    try:
+        roots = np.roots(coefficients) #solve for roots
+        roots = roots[np.isreal(roots)] #find only real roots i.e. no imaginery component
+        growth_rate = roots[roots>0]  #find only real positive roots
+        #growth_rate = (growth_rate[0].real - 1) #get growth
+
+    except:
+        growth_rate = None
+        print("Issue calcing growht rate on: ", market['date'])
+    return growth_rate
+
+
+
+
+# #calc risk-free rates (rf_rates)
+# rf_rates_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
+# rf_rates_df = rf_rates_df.set_index('date')
+# rf_rates_df = rf_rates_df.apply(lambda x : x / 100) #convert to decimal form
+# rf_rates_df = rf_rates_df.apply(lambda x : np.power(1+(x/2),2) - 1) #convert to annual effective
+# rf_rates_s = rf_rates_df.apply(lambda x : scipy.interpolate.interp1d([1,2,3,5,7,10,20,30], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
+# rf_rates_s = rf_rates_s.apply(lambda x : bootstrap(x))
+# #print(rf_rates_s)
+#
+#
+# #calc real rates (real_rates)
+# real_rates_df = pd.read_sql_table('tips_yields', engine) #read in current treasury yields  table
+# real_rates_df = real_rates_df.set_index('date')
+# real_rates_df = real_rates_df.apply(lambda x : x / 100) #convert to decimal form
+# real_rates_df = real_rates_df.apply(lambda x : np.power(1+(x/2),2) - 1) #convert to annual effective
+# real_rates_s = real_rates_df.apply(lambda x : scipy.interpolate.interp1d([5,7,10,20,30], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
+# real_rates_s = real_rates_s.apply(lambda x : bootstrap(x))
+# #print(real_rates_s)
+#
+# #calc inflation rates here
+#
+#
+# #calc risk preium rates (rp_rates) -- #set flat curve
+# rp_rates_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
+# rp_rates_df['risk_premium_x'] = .000 #set flat rp curve
+# rp_rates_df['risk_premium_y'] = .000 #set flat rp curve
+# rp_rates_df = rp_rates_df.set_index('date')
+# rp_rates_df = rp_rates_df[['risk_premium_x', 'risk_premium_y']]
+# rp_rates_s = rp_rates_df.apply(lambda x : scipy.interpolate.interp1d([5,10], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
+# #print(rp_rates_s)
+#
+#
+# rates_df = pd.concat([rf_rates_s,real_rates_s,rp_rates_s], axis=1)
+# rates_df.columns =['risk_free_rates','real_rates','risk_premium_rates']
+# rates_df = rates_df.reset_index()
+# rates_df['date'] = pd.to_datetime(rates_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+# #print(rates_df)
+#
+#
+# #company - market,
+#
+# #market - price,
+#
+# #calc market diviends, earnings
+#
+#find consittuens
+#****** I STILL NEED TO FILTER OUT DUPLICATES *******
+sp500_df = pd.read_sql_table('sp500_constituents', engine)
+sp500_df = sp500_df.loc[sp500_df['date'] >= np.datetime64("2021-01-01") ]#filter for only the dates you want; will delete later; for testing
+sp500_df['date'] = pd.to_datetime(sp500_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+sp500_df['tickers'] = sp500_df['tickers'].str.split(',')
+sp500_df = sp500_df.explode('tickers') #break out so each date, ticker is unique
+sp500_df = sp500_df.rename(columns = {'tickers':'ticker'})
+sp500_df = sp500_df.drop_duplicates(subset=['date','ticker']) #drop any duplicates dates, ticker combo'; probs unccesary but just in case
+sp500_df['sp500'] = 'x' #mark as part of sp500
+#print(sp500_df)
+
+
+
+company_df = pd.read_sql_table('company_measures', engine)
+#formating -- will need to delete later and save dtypes into sql table
+company_df['marketcap'] = company_df['marketcap'].astype(float)
+company_df['dividends_ttm'] = company_df['dividends_ttm'].astype(float)
+company_df['non_gaap_earnings_ttm'] = company_df['non_gaap_earnings_ttm'].astype(float)
+company_df['date'] = pd.to_datetime(company_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+
+company_df = pd.merge(sp500_df, company_df, on=['date','ticker'], how='inner')
+
+
+#company_df.to_csv('company.csv')
+
+sp500_price_df = pd.read_sql_table('sp500_prices', engine)
+#formating -- will need to delete later and save dtypes into sql table
+sp500_price_df['sp500_close'] = sp500_price_df['sp500_close'].astype(float)
+sp500_price_df['date'] = pd.to_datetime(sp500_price_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+
+
+market_df = company_df.groupby(['date','sp500'])[['marketcap','dividends_ttm','non_gaap_earnings_ttm']].sum()
+market_df = pd.merge(market_df, sp500_price_df, on=['date'], how='inner') #merge in sp500 price
+market_df = market_df.loc[market_df['date'] >= '2020-01-01' ]#filter for only the dates you want; will delete later
+market_df['date'] = pd.to_datetime(market_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+market_df['divisor'] = market_df['marketcap'] / market_df['sp500_close']
+market_df['dividends_ttm'] = market_df['dividends_ttm'] / market_df['divisor']
+market_df['non_gaap_earnings_ttm'] = market_df['non_gaap_earnings_ttm'] / market_df['divisor']
+market_df['payout_ratio'] = market_df['dividends_ttm'] / market_df['non_gaap_earnings_ttm']
+market_df = market_df.replace(np.nan, 0)
+market_df.to_csv('market1.csv')
+print(market_df)
+
+market_df = pd.merge(market_df, rates_df, on='date', how='inner')
+
+print(market_df)
+market_df['growth_rate'] = market_df.apply(lambda x : calc_growth_rate(x), axis=1) #convert to decimal form
+print(market_df.columns)
+print(market_df)
+market_df.to_csv('market2.csv')
+
+# #
+# # # m_df.to_csv('market.csv')
+# # # print(m_df)
+# #

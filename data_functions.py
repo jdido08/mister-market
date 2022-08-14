@@ -351,24 +351,66 @@ def reset_company_status():
     read_write_df_sql(function = "write", df = df, table_name = "company_data_status", if_exists = "replace")
 
     #replace existing company stock tables w/ empty table
-    company_stock_df = pd.DataFrame(columns = ['date', 'open', 'high', 'low', 'close', 'volume', 'ticker'])
-    read_write_df_sql(function = "write", df = company_stock_df, table_name = "company_stock", if_exists = "replace")
+    company_stock_df = pd.DataFrame(columns = ['date', 'open','high','low', 'close', 'volume', 'ticker'])
+    #read_write_df_sql(function = "write", df = company_stock_df, table_name = "company_stock", if_exists = "replace")
+    company_stock_df.to_sql('company_stock', engine, if_exists='replace', index=False, chunksize=500,
+        dtype={'open':Float(),
+        'high':Float(),
+        'low':Float(),
+        'close':Float(),
+        'volume':Float()})
+
 
     #replace existing adjusted company stock tables w/ empty table
-    company_adjusted_stock_df = pd.DataFrame(columns = ['date', 'open', 'high', 'low', 'close', 'adjusted_close', 'volume', 'dividend_amount', 'split_coefficient', 'ticker'])
-    read_write_df_sql(function = "write", df = company_adjusted_stock_df, table_name = "company_adjusted_stock", if_exists = "replace")
+    company_adjusted_stock_df.to_sql( = pd.DataFrame(columns = ['date', 'open', 'high', 'low', 'close', 'adjusted_close', 'volume', 'dividend_amount', 'split_coefficient', 'ticker'])
+    #read_write_df_sql(function = "write", df = company_adjusted_stock_df, table_name = "company_adjusted_stock", if_exists = "replace")
+    company_adjusted_stock_df.to_sql('company_adjusted_stock', engine, if_exists='replace', index=False, chunksize=500,
+        dtype={'open':Float(),
+        'high':Float(),
+        'low':Float(),
+        'close':Float(),
+        'adjusted_close':Float(),
+        'volume':Float(),
+        'dividend_amount':Float(),
+        'split_coefficient':Float()})
 
     #replace existing company earnings tables w/ empty table
     company_earnings_df = pd.DataFrame(columns = ['fiscalDateEnding', 'date', 'reportedEPS', 'estimatedEPS', 'surprise', 'surprisePercentage', 'ticker'])
-    read_write_df_sql(function = "write", df = company_earnings_df, table_name = "company_earnings", if_exists = "replace")
+    #read_write_df_sql(function = "write", df = company_earnings_df, table_name = "company_earnings", if_exists = "replace")
+    company_earnings_df.to_sql('company_earnings', engine, if_exists='replace', index=False, chunksize=500,
+        dtype={'reportedEPS':Float(),
+        'estimatedEPS':Float(),
+        'surprise':Float(),
+        'surprisePercentage':Float()})
+
 
     #replace existing company earnings tables w/ empty table
     company_balance_sheet_df = pd.DataFrame(columns = ['fiscalDateEnding','reportedCurrency','totalAssets','totalLiabilities','totalShareholderEquity','commonStock','commonStockSharesOutstanding','cash','ticker'])
-    read_write_df_sql(function = "write", df = company_balance_sheet_df, table_name = "company_balance_sheet", if_exists = "replace")
+    #read_write_df_sql(function = "write", df = company_balance_sheet_df, table_name = "company_balance_sheet", if_exists = "replace")
+    company_balance_sheet_df.to_sql('company_balance_sheet', engine, if_exists='replace', index=False, chunksize=500,
+        dtype={'totalAssets':Float(),
+        'totalLiabilities':Float(),
+        'totalShareholderEquity':Float(),
+        'commonStock':Float(),
+        'commonStockSharesOutstanding':Float(),
+        'cash':Float()})
 
     #replace existing company earnings tables w/ empty table
     company_measures_df = pd.DataFrame(columns = ['ticker','date','close_price','adjusted_close_price','shares_outstanding','dps_ttm','dividends_ttm', 'non_gaap_eps_ttm','non_gaap_earnings_ttm','sector','industry','exchange','currency','name','marketcap','payout_ratio','dividend_yield','earnings_yield'])
-    read_write_df_sql(function = "write", df = company_measures_df, table_name = "company_measures", if_exists = "replace")
+    #read_write_df_sql(function = "write", df = company_measures_df, table_name = "company_measures", if_exists = "replace")
+    company_measures_df.to_sql('company_measures', engine, if_exists='replace', index=False, chunksize=500,
+        dtype={'close_price':Float(),
+        'adjusted_close_price':Float(),
+        'shares_outstanding':Float(),
+        'dps_ttm':Float(),
+        'dividends_ttm':Float(),
+        'non_gaap_eps_ttm':Float(),
+        'non_gaap_earnings_ttm':Float(),
+        'marketcap':Float(),
+        'payout_ratio':Float(),
+        'dividend_yield':Float(),
+        'earnings_yield':Float()})
+
 
 
 def update_company_stock_data(ticker):
