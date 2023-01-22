@@ -1,3 +1,7 @@
 
 in reset_company_status -- when saving to sql set column dtypes
+  -- completed but still need to check it works
 double check company stock table columns
+
+
+-- there's plently of missing data in level down company measueres

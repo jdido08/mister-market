@@ -326,143 +326,385 @@ def bootstrap(ytms): #this function is setup for yearly calcs
     zeros = scipy.interpolate.interp1d(years, zeros, bounds_error=False, fill_value="extrapolate")
     return zeros #return interpole object
 
+
+
+
+
+
+#trying to do this from scratch -  -- update 1/12/2022
+# def calc_growth_rate(market):
+#     market_time_horizon = 10 #market does not see further out than certain fime frame
+#     coefficients = [] #create coefficents list
+#     coefficients.append(-1*market['sp500_close'])
+#     terminal_value = 0
+#
+#     for i in range(1,1000):
+#         if(i <= market_time_horizon):
+#             coefficient = market['non_gaap_earnings_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+#             coefficients.append(coefficient)
+#         elif(i > market_time_horizon):
+#             terminal_value = terminal_value + ((market['non_gaap_earnings_ttm'] * np.power(1+market['risk_free_rates'](market_time_horizon),i)) / (np.power(1+market['risk_free_rates'](market_time_horizon),i) * np.power(1+market['risk_premium_rates'](market_time_horizon),i)))
+#
+#     print("terminal_value: ", terminal_value)
+#     print("price: ", coefficients[0])
+#     coefficients[0] = coefficients[0] + terminal_value
+#     print("coefficient: ", coefficients[0])
+#
+#     try:
+#         poly = np.polynomial.polynomial.Polynomial(coefficients)
+#         roots = poly.roots()
+#         roots = roots[np.isreal(roots)] #find only real roots i.e. roots w/ no imaginery component
+#         roots = roots[roots>0]  #find only real positive roots
+#         growth_rate = (roots[0].real - 1) #get growth
+#         #print(growth_rate)
+#         return growth_rate
+#     except Exception as e:
+#         print('ERROR: Cant calc market growth for ', market['date'], '! DETAILS: ', e)
+#         return "#N/A"
+
+#update 1/17/2023 - getting rid of time horizon
+# def calc_growth_rate(market):
+#     coefficients = [] #create coefficents list
+#     coefficients.append(-1*market['sp500_close'])
+#     for i in range(1,1000): #1000 to approx for infinfity
+#         coefficient = market['dps_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+#         coefficients.append(coefficient)
+#
+#     try:
+#         poly = np.polynomial.polynomial.Polynomial(coefficients)
+#         roots = poly.roots()
+#         roots = roots[np.isreal(roots)] #find only real roots i.e. roots w/ no imaginery component
+#         roots = roots[roots>0]  #find only real positive roots
+#         growth_rate = (roots[0].real - 1) #get growth
+#         #print(growth_rate)
+#         return growth_rate
+#     except Exception as e:
+#         print('ERROR: Cant calc market growth for ', market['date'], '! DETAILS: ', e)
+#         return "#N/A"
+
+
+#trying to do this from scratch
 def calc_growth_rate(market):
-
-    long_term_coefficient = 0
-
+    market_time_horizon = 10 #market does not see further out than fixed period
     coefficients = [] #create coefficents list
-    for i in range(1,1000): #market does not see further out than 30 years
-
-        if(i < 30):
-            coefficient = market['dividends_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
-            coefficients.append(coefficient)
-        elif(i == 30):
-            coefficient = market['dividends_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
-            long_term_coefficient = long_term_coefficient + coefficient
-        else:
-            coefficient = (market['dividends_ttm'] *  np.power(1+market['risk_free_rates'](30), i - 30) ) / (np.power(1+market['risk_free_rates'](30),i) * np.power(1+market['risk_premium_rates'](30),i))
-            long_term_coefficient = long_term_coefficient + coefficient
-
-    coefficients.append(long_term_coefficient)
-    coefficients = coefficients[::-1] #reverse order of list
-    #coefficients.insert(0,(-1*market['sp500_close'])) #insert negative price at beginning of list
     coefficients.append(-1*market['sp500_close'])
-    #coefficients = coefficients[::-1] #reverse order of list
-    #p = np.poly1d(coefficients])
-    #print(coefficients)
+    for i in range(1,1000): #1000 to approx for infinfity
+        if(i < market_time_horizon):
+            coefficient = market['dps_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+            coefficients.append(coefficient)
+        elif(i >= market_time_horizon):
+            coefficient = market['dps_ttm'] / (np.power(1+market['risk_free_rates'](10),i) * np.power(1+market['risk_premium_rates'](10),i))
+            coefficients.append(coefficient)
+    try:
+        poly = np.polynomial.polynomial.Polynomial(coefficients)
+        roots = poly.roots()
+        roots = roots[np.isreal(roots)] #find only real roots i.e. roots w/ no imaginery component
+        roots = roots[roots>0]  #find only real positive roots
+        growth_rate = (roots[0].real - 1) #get growth
+        #print(growth_rate)
+        return growth_rate
+    except Exception as e:
+        print('ERROR: Cant calc market growth for ', market['date'], '! DETAILS: ', e)
+        return "#N/A"
+
+
+# def calc_growth_rate(market):
+#
+#     long_term_coefficient = 0
+#
+#     coefficients = [] #create coefficents list
+#     for i in range(1,1000): #market does not see further out than 30 years
+#
+#         if(i < 30):
+#             coefficient = market['dividends_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+#             coefficients.append(coefficient)
+#         elif(i == 30):
+#             coefficient = market['dividends_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+#             long_term_coefficient = long_term_coefficient + coefficient
+#         else:
+#             coefficient = (market['dividends_ttm'] *  np.power(1+market['risk_free_rates'](30), i - 30) ) / (np.power(1+market['risk_free_rates'](30),i) * np.power(1+market['risk_premium_rates'](30),i))
+#             long_term_coefficient = long_term_coefficient + coefficient
+#
+#     coefficients.append(long_term_coefficient)
+#     coefficients = coefficients[::-1] #reverse order of list
+#     #coefficients.insert(0,(-1*market['sp500_close'])) #insert negative price at beginning of list
+#     coefficients.append(-1*market['sp500_close'])
+#     #coefficients = coefficients[::-1] #reverse order of list
+#     #p = np.poly1d(coefficients])
+#     #print(coefficients)
+#
+#     try:
+#         roots = np.roots(coefficients) #solve for roots
+#         roots = roots[np.isreal(roots)] #find only real roots i.e. no imaginery component
+#         growth_rate = roots[roots>0]  #find only real positive roots
+#         #growth_rate = (growth_rate[0].real - 1) #get growth
+#
+#     except:
+#         growth_rate = None
+#         print("Issue calcing growht rate on: ", market['date'])
+#     return growth_rate
+
+def calc_real_rates():
+    #calc real rates (real_rates)
+    real_rates_df = pd.read_sql_table('tips_yields', engine) #read in current treasury yields  table
+    real_rates_df = real_rates_df.set_index('date')
+    real_rates_df = real_rates_df.apply(lambda x : x / 100) #convert to decimal form
+    real_rates_df = real_rates_df.apply(lambda x : np.power(1+(x/2),2) - 1) #convert to annual effective
+    real_rates_s = real_rates_df.apply(lambda x : scipy.interpolate.interp1d([5,7,10,20,30], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
+    real_rates_s = real_rates_s.apply(lambda x : bootstrap(x))
+    #print(real_rates_s)
+    #print('real-rates')
+
+def calc_market_measures(calc_start_date, calc_end_date):
+
+    #calc risk free rates
+    #rf_rates_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
+    rf_rates = db.Table('treasury_yields', metadata, autoload=True, autoload_with=engine)
+    rf_rates_df_query = db.select([rf_rates]).where((rf_rates.columns.date >= calc_start_date) & (rf_rates.columns.date <= calc_end_date))
+    rf_rates_df = pd.read_sql_query(rf_rates_df_query, engine)
+    rf_rates_df = rf_rates_df.set_index('date')
+    rf_rates_df = rf_rates_df.apply(lambda x : x / 100) #convert to decimal form
+    rf_rates_df = rf_rates_df.apply(lambda x : np.power(1+(x/2),2) - 1) #convert to annual effective
+    rf_rates_s = rf_rates_df.apply(lambda x : scipy.interpolate.interp1d([1,2,3,5,7,10,20,30], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
+    rf_rates_s = rf_rates_s.apply(lambda x : bootstrap(x))
+    #print(rf_rates_s)
+    #print('risk-free-rates')
+
+    #calc risk preium rates (rp_rates) -- #set flat curve for now
+    #rp_rates_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
+    rp_rates = db.Table('treasury_yields', metadata, autoload=True, autoload_with=engine)
+    rp_rates_df_query = db.select([rp_rates]).where((rp_rates.columns.date >= calc_start_date) & (rp_rates.columns.date <= calc_end_date))
+    rp_rates_df = pd.read_sql_query(rp_rates_df_query, engine)
+    rp_rates_df = rp_rates_df.set_index('date')
+    rp_rates_df['risk_premium_x'] = .05 #set flat rp curve
+    rp_rates_df['risk_premium_y'] = .05 #set flat rp curve
+    rp_rates_df = rp_rates_df[['risk_premium_x', 'risk_premium_y']]
+    rp_rates_s = rp_rates_df.apply(lambda x : scipy.interpolate.interp1d([5,10], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
+    #print(rp_rates_s)
+    #print('risk-premium-rates')
+
+    discount_rates_df = pd.concat([rf_rates_s,rp_rates_s], axis=1)
+    discount_rates_df.columns =['risk_free_rates','risk_premium_rates']
+    discount_rates_df = discount_rates_df.reset_index()
+    discount_rates_df['date'] = pd.to_datetime(discount_rates_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+    #print(rates_df)
+    #print('discount-rates')
+
+    #find market consittuens
+    #sp500_df = pd.read_sql_table('sp500_constituents', engine)
+    sp500 = db.Table('sp500_constituents', metadata, autoload=True, autoload_with=engine)
+    sp500_df_query = db.select([sp500]).where((sp500.columns.date >= calc_start_date) & (sp500.columns.date <= calc_end_date))
+    sp500_df = pd.read_sql_query(sp500_df_query, engine)
+    sp500_df['date'] = pd.to_datetime(sp500_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+    sp500_df = sp500_df.loc[(sp500_df['date'] >= calc_start_date) & (sp500_df['date'] <= calc_end_date)] #filter for only the dates you want; will delete later; for testing
+    sp500_df['tickers'] = sp500_df['tickers'].str.split(',')
+    sp500_df = sp500_df.explode('tickers') #break out so each date, ticker is unique
+    sp500_df = sp500_df.rename(columns = {'tickers':'ticker'})
+    sp500_df = sp500_df.drop_duplicates(subset=['date','ticker']) #drop any duplicates dates, ticker combo'; probs unccesary but just in case
+    sp500_df['sp500'] = 'x' #mark as part of sp500
+    #print(sp500_df)
+    #print('sp500')
+
+
+    #calc company measures
+    company_df = pd.read_sql_table('company_measures', engine)
+    #formating -- will need to delete later and save dtypes into sql table
+    company_df['marketcap'] = company_df['marketcap'].astype(float)
+    company_df['dividends_ttm'] = company_df['dividends_ttm'].astype(float)
+    company_df['non_gaap_earnings_ttm'] = company_df['non_gaap_earnings_ttm'].astype(float)
+    company_df['date'] = pd.to_datetime(company_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+    company_df['name'] = company_df['name'].astype(str)
+    company_df = company_df.drop_duplicates(subset=['date','name']) #drop any duplicates dates, name combo'; this is for dual listed companies - I know this isn't the ideal way to do this but it's probably good enough
+    company_df = pd.merge(sp500_df, company_df, on=['date','ticker'], how='inner') #only merge in companies that are in the sp500 for that day
+    #company_df.to_csv('company.csv')
+
+    #get sp500 price
+    #sp500_price_df = pd.read_sql_table('sp500_prices', engine)
+    sp500_price = db.Table('sp500_prices', metadata, autoload=True, autoload_with=engine)
+    sp500_price_df_query = db.select([sp500_price]).where((sp500_price.columns.date >= calc_start_date) & (sp500_price.columns.date <= calc_end_date))
+    sp500_price_df = pd.read_sql_query(sp500_price_df_query, engine)
+    #formating -- will need to delete later and save dtypes into sql table
+    sp500_price_df['sp500_close'] = sp500_price_df['sp500_close'].astype(float)
+    sp500_price_df['date'] = pd.to_datetime(sp500_price_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+
+
+    #market_df = company_df.groupby(['date','sp500'])[['marketcap','dividends_ttm','non_gaap_earnings_ttm']].sum()
+    market_df = company_df.groupby(['date','sp500'])[['marketcap','dividends_ttm','non_gaap_earnings_ttm']].sum()
+    market_df = pd.merge(market_df, sp500_price_df, on=['date'], how='inner') #merge in sp500 price
+    market_df['date'] = pd.to_datetime(market_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+    market_df = market_df.loc[(market_df['date'] >= calc_start_date) & (market_df['date'] <= calc_end_date)] #select timeframe for calculation
+    market_df['divisor'] = market_df['marketcap'] / market_df['sp500_close']
+    market_df['dps_ttm'] = market_df['dividends_ttm'] / market_df['divisor']
+    market_df['non_gaap_eps_ttm'] = market_df['non_gaap_earnings_ttm'] / market_df['divisor']
+    market_df['payout_ratio'] = market_df['dps_ttm'] / market_df['non_gaap_eps_ttm']
+    market_df = market_df.replace(np.nan, 0)
+
+
+    #merge in discount rates
+    market_df = pd.merge(market_df, discount_rates_df, on='date', how='inner')
+    market_df['growth_rate'] = market_df.apply(lambda x : calc_growth_rate(x), axis=1) #convert to decimal form
+    return market_df
+
+
+
+
+
+# time_1 = datetime.datetime.now()
+# calc_market()
+# time_2 = datetime.datetime.now()
+# print("time: ", time_2 - time_1)
+
+#market_df['growth_rate'] = market_df.apply(lambda x : calc_growth_rate(x), axis=1) #convert to decimal form
+#time_3 = datetime.datetime.now()
+#print(time_3 - time_2)
+# print(market_df.columns)
+# print(market_df)
+# market_df.to_csv('market2.csv')
+
+#
+# # m_df.to_csv('market.csv')
+# # print(m_df)
+
+
+def find_last_calcable_market_date():
+    #find last date for sp500 constituent data
+    sp500_constituents = db.Table('sp500_constituents', metadata, autoload=True, autoload_with=engine)
+    sp500_constituents_last_date_query = db.select([sp500_constituents.columns.date]).order_by(sp500_constituents.columns.date.desc())
+    sp500_constituents_last_date_df = connection.execute(sp500_constituents_last_date_query).first()
+    sp500_constituents_last_date = sp500_constituents_last_date_df['date']
+    #print("SP500 Constituents: " , sp500_constituents_last_date)
+
+    #find last date for sp500 price data
+    sp500_prices = db.Table('sp500_prices', metadata, autoload=True, autoload_with=engine)
+    sp500_prices_last_date_query = db.select([sp500_prices.columns.date]).order_by(sp500_prices.columns.date.desc())
+    sp500_prices_last_date_df = connection.execute(sp500_prices_last_date_query).first()
+    sp500_prices_last_date = sp500_prices_last_date_df['date']
+    #print("SP500 Price: ",sp500_prices_last_date)
+
+    #find last date for teasury data
+    treasury_yields = db.Table('treasury_yields', metadata, autoload=True, autoload_with=engine)
+    treasury_yields_last_date_query = db.select([treasury_yields.columns.date]).order_by(treasury_yields.columns.date.desc())
+    treasury_yields_last_date_df = connection.execute(treasury_yields_last_date_query).first()
+    treasury_yields_last_date = treasury_yields_last_date_df['date']
+    #print("Treasury Yields: ", treasury_yields_last_date)
+
+    #find last date for tips data
+    tips_yields = db.Table('tips_yields', metadata, autoload=True, autoload_with=engine)
+    tips_yields_last_date_query = db.select([tips_yields.columns.date]).order_by(tips_yields.columns.date.desc())
+    tips_yields_last_date_df = connection.execute(tips_yields_last_date_query).first()
+    tips_yields_last_date = tips_yields_last_date_df['date']
+    #print("TIPS Yields: ", tips_yields_last_date)
+
+    #find last date for company updates
+    company_data_status = db.Table('company_data_status', metadata, autoload=True, autoload_with=engine)
+    company_data_status_last_date_query = db.select([company_data_status.columns.calc_company_measures_update_date]).order_by(company_data_status.columns.calc_company_measures_update_date.desc())
+    company_data_status_last_date_df = connection.execute(company_data_status_last_date_query).first()
+    company_data_status_last_date = company_data_status_last_date_df['calc_company_measures_update_date']
+    company_data_status_last_date = datetime.datetime.strptime(company_data_status_last_date, "%d/%m/%Y %H:%M:%S") #format to get into datetime
+    #print("Company Data: ", company_data_status_last_date)
+
+    last_calcable_market_date = min([sp500_constituents_last_date,
+        sp500_prices_last_date,
+        treasury_yields_last_date,
+        tips_yields_last_date,
+        company_data_status_last_date])
+    #print("Last Calculable Market Date: ",last_calcable_market_date )
+
+
+    return last_calcable_market_date
+
+
+# to run locally -
+def reset_market_status_and_measures():
+    start_date = datetime.datetime(2022, 1, 1).strftime("%Y-%m-%d") #manuelly set market calc start date
+
+    #1.) first reset market status table
+    status_end_date  = datetime.datetime(2050, 1, 1).strftime("%Y-%m-%d") #set end calc date
+    df = pd.date_range(start=start_date, end=status_end_date).to_frame(index=False, name='date')
+    df['date'] = pd.to_datetime(df['date']) #formatting
+    df["calc_status"] = "#N/A"
+    #print(df)
 
     try:
-        roots = np.roots(coefficients) #solve for roots
-        roots = roots[np.isreal(roots)] #find only real roots i.e. no imaginery component
-        growth_rate = roots[roots>0]  #find only real positive roots
-        #growth_rate = (growth_rate[0].real - 1) #get growth
-
-    except:
-        growth_rate = None
-        print("Issue calcing growht rate on: ", market['date'])
-    return growth_rate
+        df.to_sql("market_status", engine, if_exists="replace", index=False, chunksize=500)
+        print("SUCCESS: ", "market_status", " updated!")
+    except Exception as e:
+        print("ERROR: Can't update ", "market_status" ,"! DETAILS:", e)
 
 
 
+    #2.) next update market measures table
+    market_end_date = datetime.datetime(2023, 1, 10).strftime("%Y-%m-%d") #set end calc date
+    #market_end_date = find_last_calcable_market_date().strftime("%Y-%m-%d")
+    df = calc_market_measures(start_date, market_end_date) #calc market measures for these dates
 
-# #calc risk-free rates (rf_rates)
-# rf_rates_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
-# rf_rates_df = rf_rates_df.set_index('date')
-# rf_rates_df = rf_rates_df.apply(lambda x : x / 100) #convert to decimal form
-# rf_rates_df = rf_rates_df.apply(lambda x : np.power(1+(x/2),2) - 1) #convert to annual effective
-# rf_rates_s = rf_rates_df.apply(lambda x : scipy.interpolate.interp1d([1,2,3,5,7,10,20,30], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
-# rf_rates_s = rf_rates_s.apply(lambda x : bootstrap(x))
-# #print(rf_rates_s)
-#
-#
-# #calc real rates (real_rates)
-# real_rates_df = pd.read_sql_table('tips_yields', engine) #read in current treasury yields  table
-# real_rates_df = real_rates_df.set_index('date')
-# real_rates_df = real_rates_df.apply(lambda x : x / 100) #convert to decimal form
-# real_rates_df = real_rates_df.apply(lambda x : np.power(1+(x/2),2) - 1) #convert to annual effective
-# real_rates_s = real_rates_df.apply(lambda x : scipy.interpolate.interp1d([5,7,10,20,30], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
-# real_rates_s = real_rates_s.apply(lambda x : bootstrap(x))
-# #print(real_rates_s)
-#
-# #calc inflation rates here
-#
-#
-# #calc risk preium rates (rp_rates) -- #set flat curve
-# rp_rates_df = pd.read_sql_table('treasury_yields', engine) #read in current treasury yields  table
-# rp_rates_df['risk_premium_x'] = .000 #set flat rp curve
-# rp_rates_df['risk_premium_y'] = .000 #set flat rp curve
-# rp_rates_df = rp_rates_df.set_index('date')
-# rp_rates_df = rp_rates_df[['risk_premium_x', 'risk_premium_y']]
-# rp_rates_s = rp_rates_df.apply(lambda x : scipy.interpolate.interp1d([5,10], x, bounds_error=False, fill_value="extrapolate"), axis=1) #get ytm curve by interpolating
-# #print(rp_rates_s)
-#
-#
-# rates_df = pd.concat([rf_rates_s,real_rates_s,rp_rates_s], axis=1)
-# rates_df.columns =['risk_free_rates','real_rates','risk_premium_rates']
-# rates_df = rates_df.reset_index()
-# rates_df['date'] = pd.to_datetime(rates_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-# #print(rates_df)
-#
-#
-# #company - market,
-#
-# #market - price,
-#
-# #calc market diviends, earnings
-#
-#find consittuens
-#****** I STILL NEED TO FILTER OUT DUPLICATES *******
-sp500_df = pd.read_sql_table('sp500_constituents', engine)
-sp500_df = sp500_df.loc[sp500_df['date'] >= np.datetime64("2021-01-01") ]#filter for only the dates you want; will delete later; for testing
-sp500_df['date'] = pd.to_datetime(sp500_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-sp500_df['tickers'] = sp500_df['tickers'].str.split(',')
-sp500_df = sp500_df.explode('tickers') #break out so each date, ticker is unique
-sp500_df = sp500_df.rename(columns = {'tickers':'ticker'})
-sp500_df = sp500_df.drop_duplicates(subset=['date','ticker']) #drop any duplicates dates, ticker combo'; probs unccesary but just in case
-sp500_df['sp500'] = 'x' #mark as part of sp500
-#print(sp500_df)
+    #rewrite entire market_measures table
+    try:
+        df.to_sql("market_measures", engine, if_exists="replace", index=False, chunksize=500)
+        print("SUCCESS: ", "market_measures", " updated!")
+        #need to update market_status table as well to mark down these things have been updated
+        market_status = db.Table('market_status', metadata, autoload=True, autoload_with=engine) #connect to market_status table
+
+        date_array = pd.date_range(start=start_date, end=market_end_date)
+        for i in date_array:
+            try:
+                update_calc_status_query = db.update(market_status).values(calc_status = "DONE").where(market_status.columns.date == i)
+                connection.execute(update_calc_status_query)
+            except Exception as e:
+                print("ERROR: Can't update ", "market status for day: ", i," ! DETAILS:", e)
+
+    except Exception as e:
+        print("ERROR: Can't update ", "market_measures" ,"! DETAILS:", e)
 
 
 
-company_df = pd.read_sql_table('company_measures', engine)
-#formating -- will need to delete later and save dtypes into sql table
-company_df['marketcap'] = company_df['marketcap'].astype(float)
-company_df['dividends_ttm'] = company_df['dividends_ttm'].astype(float)
-company_df['non_gaap_earnings_ttm'] = company_df['non_gaap_earnings_ttm'].astype(float)
-company_df['date'] = pd.to_datetime(company_df['date'] , format="%Y-%m-%d", utc=True) #change format type
+#to be run daily in the cloud -- if I run this frequently enough then it should be under 10 minutes
+def update_market_measures():
 
-company_df = pd.merge(sp500_df, company_df, on=['date','ticker'], how='inner')
+    #connect to market_status table
+    market_status = db.Table('market_status', metadata, autoload=True, autoload_with=engine)
+
+    #query for first date that's not started
+    find_date_query = db.select([market_status]).where(market_status.columns.calc_status == "#N/A").order_by(market_status.columns.date.asc())
+    result_df = connection.execute(find_date_query).first()
+    next_calc_date = result_df['date']
+    next_calc_date = next_calc_date.strftime("%Y-%m-%d")
+    next_calc_date_dt = datetime.datetime.strptime(next_calc_date,"%Y-%m-%d" )
+    print("next_calc_date: ", next_calc_date)
+
+    last_calcable_market_date = find_last_calcable_market_date().strftime("%Y-%m-%d")
+    last_calcable_market_date_dt = datetime.datetime.strptime(last_calcable_market_date,"%Y-%m-%d" )
+    print("last_calcable_market_date: ", last_calcable_market_date)
+
+    if(next_calc_date_dt <= last_calcable_market_date_dt):
+        try:
+            df = calc_market_measures(next_calc_date, last_calcable_market_date)
+            df.to_sql("market_measures", engine, if_exists="append", index=False, chunksize=500)
+            print("SUCCESS: ", "market_measures", " updated!")
+
+            date_array = pd.date_range(start=next_calc_date, end=last_calcable_market_date)
+            for i in date_array:
+                try:
+                    update_calc_status_query = db.update(market_status).values(calc_status = "DONE").where(market_status.columns.date == i)
+                    connection.execute(update_calc_status_query)
+                except Exception as e:
+                    print("ERROR: Can't update ", "market status for day: ", i," ! DETAILS:", e)
+        except Exception as e:
+            print("ERROR: Can't update ", "market_measures" ,"! DETAILS:", e)
+            date_array = pd.date_range(start=next_calc_date, end=last_calcable_market_date)
+            for i in date_array:
+                try:
+                    update_calc_status_query = db.update(market_status).values(calc_status = "ERROR").where(market_status.columns.date == i)
+                    connection.execute(update_calc_status_query)
+                except Exception as e:
+                    print("ERROR: Can't update ", "market status for day: ", i," ! DETAILS:", e)
 
 
-#company_df.to_csv('company.csv')
 
-sp500_price_df = pd.read_sql_table('sp500_prices', engine)
-#formating -- will need to delete later and save dtypes into sql table
-sp500_price_df['sp500_close'] = sp500_price_df['sp500_close'].astype(float)
-sp500_price_df['date'] = pd.to_datetime(sp500_price_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-
-
-market_df = company_df.groupby(['date','sp500'])[['marketcap','dividends_ttm','non_gaap_earnings_ttm']].sum()
-market_df = pd.merge(market_df, sp500_price_df, on=['date'], how='inner') #merge in sp500 price
-market_df = market_df.loc[market_df['date'] >= '2020-01-01' ]#filter for only the dates you want; will delete later
-market_df['date'] = pd.to_datetime(market_df['date'] , format="%Y-%m-%d", utc=True) #change format type
-market_df['divisor'] = market_df['marketcap'] / market_df['sp500_close']
-market_df['dividends_ttm'] = market_df['dividends_ttm'] / market_df['divisor']
-market_df['non_gaap_earnings_ttm'] = market_df['non_gaap_earnings_ttm'] / market_df['divisor']
-market_df['payout_ratio'] = market_df['dividends_ttm'] / market_df['non_gaap_earnings_ttm']
-market_df = market_df.replace(np.nan, 0)
-market_df.to_csv('market1.csv')
-print(market_df)
-
-market_df = pd.merge(market_df, rates_df, on='date', how='inner')
-
-print(market_df)
-market_df['growth_rate'] = market_df.apply(lambda x : calc_growth_rate(x), axis=1) #convert to decimal form
-print(market_df.columns)
-print(market_df)
-market_df.to_csv('market2.csv')
-
-# #
-# # # m_df.to_csv('market.csv')
-# # # print(m_df)
-# #
+#reset_market_measures()
+#reset_market_status()
+#daily_update_market_measures()
+#reset_market_measures()
+#find_last_calcable_market_date()
+#reset_market_status_and_measures()
+update_market_measures()
