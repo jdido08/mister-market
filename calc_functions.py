@@ -52,12 +52,12 @@ driver_name = 'mysql+pymysql'
 query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
 db_user = "root"
 db_name = "raw_data"
-db_password = get_secret("mister-market-project", "db_password", "1")
-db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
-db_port = "3306"                                                                       #for local dev
-db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
-db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
-db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
+# db_password = get_secret("mister-market-project", "db_password", "1")
+# db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
+# db_port = "3306"                                                                       #for local dev
+# db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
+# db_ssl_cert_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-cert.pem' #for local dev
+# db_ssl_key_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/client-key.pem'   #for local dev
 
 engine = db.create_engine(
   db.engine.url.URL.create(
@@ -66,19 +66,19 @@ engine = db.create_engine(
     password=db_password,
     database=db_name,
     #query=query_string,                  #for cloud function
-    host=db_hostname,  # e.g. "127.0.0.1" #for local dev
-    port=db_port,  # e.g. 3306            #for local dev
+    # host=db_hostname,  # e.g. "127.0.0.1" #for local dev
+    # port=db_port,  # e.g. 3306            #for local dev
   ),
   pool_size=5,
   max_overflow=2,
   pool_timeout=30,
   pool_recycle=1800
-  ,                                   #for local dev
-  connect_args = {                    #for local dev
-      'ssl_ca': db_ssl_ca_path ,      #for local dev
-      'ssl_cert': db_ssl_cert_path,   #for local dev
-      'ssl_key': db_ssl_key_path      #for local dev
-      }                               #for loval dev
+  # ,                                   #for local dev
+  # connect_args = {                    #for local dev
+  #     'ssl_ca': db_ssl_ca_path ,      #for local dev
+  #     'ssl_cert': db_ssl_cert_path,   #for local dev
+  #     'ssl_key': db_ssl_key_path      #for local dev
+  #     }                               #for loval dev
 )
 
 connection = engine.connect()

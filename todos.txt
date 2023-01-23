@@ -2,8 +2,9 @@
 1/22/2023:
 1. setup daily cloud function for update market measures
 2. setup flask app on app engine -- refernece: https://medium.com/@dmahugh_70618/deploying-a-flask-app-to-google-app-engine-faa883b5ffab
+   - host app on domain: https://support.google.com/domains/answer/6009957?hl=en
 2. recalc growth function -- reference https://aswathdamodaran.blogspot.com/
-3.
+3. recalc risk premiums
 
 
 
