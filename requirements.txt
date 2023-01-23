@@ -7,7 +7,6 @@ colorama==0.4.5
 cryptography==3.4.8
 DateTime==4.3
 Flask==2.1.2
-google-api-core==2.8.2
 google-auth==1.27.0
 google-cloud-core==1.6.0
 google-cloud-secret-manager==2.11.1
