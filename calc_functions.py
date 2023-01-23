@@ -698,13 +698,3 @@ def update_market_measures():
                     connection.execute(update_calc_status_query)
                 except Exception as e:
                     print("ERROR: Can't update ", "market status for day: ", i," ! DETAILS:", e)
-
-
-
-#reset_market_measures()
-#reset_market_status()
-#daily_update_market_measures()
-#reset_market_measures()
-#find_last_calcable_market_date()
-#reset_market_status_and_measures()
-update_market_measures()
