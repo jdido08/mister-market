@@ -1,4 +1,14 @@
 
+1/22/2023:
+1. setup daily cloud function for update market measures
+2. setup flask app on app engine -- refernece: https://medium.com/@dmahugh_70618/deploying-a-flask-app-to-google-app-engine-faa883b5ffab
+2. recalc growth function -- reference https://aswathdamodaran.blogspot.com/
+3.
+
+
+
+
+
 in reset_company_status -- when saving to sql set column dtypes
   -- completed but still need to check it works
 double check company stock table columns

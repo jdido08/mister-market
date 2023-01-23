@@ -362,7 +362,7 @@ def reset_company_status():
 
 
     #replace existing adjusted company stock tables w/ empty table
-    company_adjusted_stock_df.to_sql( = pd.DataFrame(columns = ['date', 'open', 'high', 'low', 'close', 'adjusted_close', 'volume', 'dividend_amount', 'split_coefficient', 'ticker'])
+    company_adjusted_stock_df.to_sql(columns = ['date', 'open', 'high', 'low', 'close', 'adjusted_close', 'volume', 'dividend_amount', 'split_coefficient', 'ticker'])
     #read_write_df_sql(function = "write", df = company_adjusted_stock_df, table_name = "company_adjusted_stock", if_exists = "replace")
     company_adjusted_stock_df.to_sql('company_adjusted_stock', engine, if_exists='replace', index=False, chunksize=500,
         dtype={'open':Float(),
