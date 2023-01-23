@@ -19,8 +19,8 @@ def get_secret(project_id, secret_id, version_id):
     """
 
     #for local dev -- set google app credentials
-    google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-6e485429eb5e.json"
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path
+    # google_application_credentials_file_path = os.path.dirname(os.path.abspath(__file__)) + "/mister-market-project-6e485429eb5e.json" #for local dev
+    # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_application_credentials_file_path #for local dev
 
     #link: https://cloud.google.com/secret-manager/docs/creating-and-accessing-secrets
     #follow instruction here to run locally: https://cloud.google.com/docs/authentication/production#create-service-account-gcloud
