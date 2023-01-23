@@ -52,7 +52,7 @@ driver_name = 'mysql+pymysql'
 query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
 db_user = "root"
 db_name = "raw_data"
-# db_password = get_secret("mister-market-project", "db_password", "1")
+db_password = get_secret("mister-market-project", "db_password", "1")
 # db_hostname = get_secret("mister-market-project", "db_hostname", "1")                  #for local dev
 # db_port = "3306"                                                                       #for local dev
 # db_ssl_ca_path = os.path.dirname(os.path.abspath(__file__)) + '/ssl/server-ca.pem'     #for local dev
@@ -65,7 +65,7 @@ engine = db.create_engine(
     username=db_user,
     password=db_password,
     database=db_name,
-    #query=query_string,                  #for cloud function
+    query=query_string,                  #for cloud function
     # host=db_hostname,  # e.g. "127.0.0.1" #for local dev
     # port=db_port,  # e.g. 3306            #for local dev
   ),

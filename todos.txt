@@ -5,6 +5,7 @@
    - host app on domain: https://support.google.com/domains/answer/6009957?hl=en
 2. recalc growth function -- reference https://aswathdamodaran.blogspot.com/
 3. recalc risk premiums
+4. clean up requirements
 
 
 
