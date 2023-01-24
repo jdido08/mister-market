@@ -1,2 +1,0 @@
-,date,marketcap,dividends_ttm,non_gaap_earnings_ttm,sp500_close,divisor,dps_ttm,non_gaap_eps_ttm,payout_ratio,risk_free_rates,risk_premium_rates
-0,2023-01-11 00:00:00+00:00,28408180246100.695,492480839980.39746,1500910195238.68,3969.61,7156415931.565241,68.8166876673814,209.72931277212712,0.32812145692839506,<scipy.interpolate.interpolate.interp1d object at 0x0000019A08D9F2C0>,<scipy.interpolate.interpolate.interp1d object at 0x0000019A08DCBBD0>
