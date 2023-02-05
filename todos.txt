@@ -4,9 +4,14 @@
 2. setup flask app on app engine -- refernece: https://medium.com/@dmahugh_70618/deploying-a-flask-app-to-google-app-engine-faa883b5ffab
    - https://cloud.google.com/appengine/docs/standard/python3/building-app
    - host app on domain: https://support.google.com/domains/answer/6009957?hl=en
+   - good flask tutorials:
+    - https://python-adv-web-apps.readthedocs.io/en/latest/flask_db2.html
+    - https://flask-sqlalchemy.palletsprojects.com/en/2.x/
+    - https://youtu.be/MwZwr5Tvyxo
 2. recalc growth function -- reference https://aswathdamodaran.blogspot.com/
 3. recalc risk premiums
-4. clean up requirements
+4. recalc cash flows
+5. clean up requirements
 
 
 

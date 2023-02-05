@@ -2,7 +2,7 @@ from ppe import db
 
 class Market(db.Model):
     __tablename__ = 'market_measures'
-    date = db.Column(db.String, primary_key=True)
+    date = db.Column(db.DateTime, primary_key=True)
     marketcap = db.Column(db.Float)
     dividends_ttm = db.Column(db.Float)
     non_gaap_earnings_ttm = db.Column(db.Float)
