@@ -700,3 +700,6 @@ def update_market_measures():
                     connection.execute(update_calc_status_query)
                 except Exception as e:
                     print("ERROR: Can't update ", "market status for day: ", i," ! DETAILS:", e)
+
+
+update_market_measures()

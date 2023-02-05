@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 import os #to get file path
-from google.cloud import secretmanager # Import the Secret Manager client library.
+from google.cloud import secretmanager # Import the  Secret Manager client library.
 import google_crc32c
 import sqlalchemy as db #to save to db
 import pandas_datareader as web # to get fred data
