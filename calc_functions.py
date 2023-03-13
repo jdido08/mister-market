@@ -385,7 +385,20 @@ def bootstrap(ytms): #this function is setup for yearly calcs
 #         return "#N/A"
 
 
-#trying to do this from scratch
+#trying new calc_growth_rate 2/5/2023
+# def calc_growth_rate(market):
+#     market_time_horizon = 10 #market does not see further out than fixed period
+#     coefficients = [] #create coefficents list
+#     zero_coefficient = market['sp500_close'] / (np.power(1+market['risk_free_rates'](market_time_horizon),market_time_horizon) * np.power(1+market['risk_premium_rates'](market_time_horizon),market_time_horizon))
+#     coefficients.append(-1*market['sp500_close'])
+#     for i in range(1,market_time_horizon+1): # 1 - time horizon
+#         if(i < market_time_horizon):
+#             coefficient = market['dps_ttm'] / (np.power(1+market['risk_free_rates'](i),i) * np.power(1+market['risk_premium_rates'](i),i))
+#             coefficients.append(coefficient)
+#         if(i == market_time_horizon):
+#             term_value = market['sp500_close'] * market['dps_ttm']
+
+#trying to do this from scratch -- good one as of 2/5/2023
 def calc_growth_rate(market):
     market_time_horizon = 10 #market does not see further out than fixed period
     coefficients = [] #create coefficents list

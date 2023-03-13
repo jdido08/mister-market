@@ -17,3 +17,11 @@
 __pycache__/
 # Ignored by the build system
 /setup.cfg
+
+# JMD ADDED ssl
+ssl/
+config.yml
+data/
+.csv
+mister-market-project-6e485429eb5e.json
+archive/
