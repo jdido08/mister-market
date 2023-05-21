@@ -1,14 +1,7 @@
-from ppe import app
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
 ### Cloud Functions ###
 
-from data_functions import *
-from calc_functions import *
+from functions.data_functions import *
+from functions.calc_functions import *
 
 #runs daily at 22:00 (10 PM) EST to capture the constituents for that day
 def update_sp500_constituents_cloud_function(request):

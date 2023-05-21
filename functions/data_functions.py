@@ -9,7 +9,7 @@ import requests
 import time
 import io
 import json
-from calc_functions import calc_company_measures
+from functions.calc_functions import calc_company_measures
 
 
 ### FUNCTIONS THAT SUPPORTING GRABBING RAW DATA FROM THE WORLD ###
