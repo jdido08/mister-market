@@ -714,5 +714,4 @@ def update_market_measures():
                 except Exception as e:
                     print("ERROR: Can't update ", "market status for day: ", i," ! DETAILS:", e)
 
-
 update_market_measures()
